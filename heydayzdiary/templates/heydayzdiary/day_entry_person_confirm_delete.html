@@ -1,0 +1,14 @@
+{% load static %}
+
+<link rel = "stylesheet" type = "text/css" href="{% static 'heydayzdiary/style.css' %}">
+
+<h1>Day Entry Person: DELETE</h1>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="" method="post">{% csrf_token %}
+    <p>Are you sure you want to delete this Person from the Day? "{{ object }}"?</p>
+    <input type="submit" value="Confirm" />
+	<p>
+		 <a href="{% url 'heydayzdiary:day_entry_person-update' day_entry_id=day_entry_person.day_entry.id pk=day_entry_person.id %}">Back to Day Entry Person edit page</a>
+	</p>
+</form>

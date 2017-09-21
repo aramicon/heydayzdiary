@@ -1,0 +1,76 @@
+{% load static %}
+
+<link rel = "stylesheet" type = "text/css" href="{% static 'heydayzdiary/style.css' %}">
+<link rel = "stylesheet" type = "text/css" href="{% static 'heydayzdiary/jquery-ui.min.css' %}">
+<script src ="{% static 'heydayzdiary/jquery-3.2.1.min.js' %}"></script>
+<script src ="{% static 'heydayzdiary/jquery-ui.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        $('#day_date').datepicker({ dateFormat: 'yy-mm-dd' });
+    });
+</script>
+<script>
+  $( function() {
+    $( "#sleep_duration_slider" ).slider({
+      range: "min",
+      value: 80,
+      min: 0,
+      max: 240,
+      slide: function( event, ui ) {
+        $( "#sleep_duration" ).val( ui.value/10 );
+      }
+    });
+    $( "#sleep_duration" ).val( $( "#sleep_duration_slider" ).slider( "value" )/10 );
+	
+	 $( "#sleep_quality_slider" ).slider({
+      range: "min",
+      value: 5,
+      min: 1,
+      max: 10,
+	  step:1,
+      slide: function( event, ui ) {
+        $( "#sleep_quality" ).val( ui.value );
+      }
+    });
+    $( "#sleep_quality" ).val( $( "#sleep_quality_slider" ).slider( "value" ) );
+	
+  } );
+  </script>
+
+<h1>Add a New Day Entry</h1>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url 'heydayzdiary:detail-add' %}" method = "post">
+{% csrf_token %}
+<p>
+<strong>DATE: </strong><br />
+<input type="text" name="day_date" id="day_date" maxlength="200" placeholder = "Day Date" value = "{{ day_entry.day_date|date:"Y-m-d" }}">
+ {{ day_entry.day_date|date:"D" }}
+
+</p>
+<p>
+<strong>HEADLINE: </strong><br />
+<input type="text" name="day_headline" id="day_headline" maxlength="200" placeholder = "Day Headline" value = "{{ day_entry.day_headline }}">
+
+</p>
+<p>
+<strong>DIARY TEXT: </strong><br />
+<textarea  rows="20" cols="100" name="day_main_text" id="day_main_text" placeholder = "Day Main Text">{{ day_entry.day_main_text }}</textarea>
+</p>
+<p>
+<label for="sleep_duration">Hours of Sleep:</label>
+<input type="text" id="sleep_duration" name="sleep_duration" readonly style="border:0; color:#f6931f; font-weight:bold;" value = "{{ day_entry.sleep_duration }}">
+<div id="sleep_duration_slider"></div>
+
+<label for="sleep_quality">Sleep Quality:</label>
+<input type="text" id="sleep_quality" name = "sleep_quality" readonly style="border:0; color:#f6931f; font-weight:bold;" value = "{{ day_entry.sleep_quality }}">
+<div id="sleep_quality_slider"></div>
+</p>
+
+<input type = "submit" value = "Save" />
+</form>
+
+
+<p>
+ <a href="{% url 'heydayzdiary:index' %}">Back to DAYS List</a>
+</p>

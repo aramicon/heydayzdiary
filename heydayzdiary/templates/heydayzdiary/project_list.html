@@ -1,0 +1,24 @@
+{% load static %}
+
+<link rel = "stylesheet" type = "text/css" href="{% static 'heydayzdiary/style.css' %}">
+
+<h1>Projects</h1>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+{% if object_list  %}
+	<ul>
+	{% for project in object_list  %}
+	<p>
+		<a href="{% url 'heydayzdiary:project-update' project.id %}">PERSON {{ project.id }}: <strong>{{ project.name }}</strong> </li></a>
+	</p>
+	{% endfor %}
+		
+	</ul>
+{% else %}
+	<p>No Projects exist.</p>
+{% endif %}
+ <p>
+ <a href="{% url 'heydayzdiary:project-add' %}">Add a NEW project</a>
+</p>
+<p>
+ <a href="{% url 'heydayzdiary:index' %}">Back to DAYS List</a>
+</p>

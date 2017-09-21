@@ -1,0 +1,24 @@
+{% load static %}
+
+<link rel = "stylesheet" type = "text/css" href="{% static 'heydayzdiary/style.css' %}">
+
+<h1>Locations</h1>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+{% if object_list  %}
+	<ul>
+	{% for location in object_list  %}
+	<p>
+		<a href="{% url 'heydayzdiary:location-update' location.id %}">LOCATION: <strong>{{ location.location_name }}</strong> </li></a>
+	</p>
+	{% endfor %}
+		
+	</ul>
+{% else %}
+	<p>No Locations exist.</p>
+{% endif %}
+ <p>
+ <a href="{% url 'heydayzdiary:location-add' %}">Add a NEW Location</a>
+</p>
+<p>
+ <a href="{% url 'heydayzdiary:index' %}">Back to DAYS List</a>
+</p>

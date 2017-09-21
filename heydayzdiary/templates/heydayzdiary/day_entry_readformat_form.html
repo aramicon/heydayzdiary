@@ -1,0 +1,95 @@
+{% load static %}
+
+<link rel = "stylesheet" type = "text/css" href="{% static 'heydayzdiary/style.css' %}">
+<link rel = "stylesheet" type = "text/css" href="{% static 'heydayzdiary/jquery-ui.min.css' %}">
+<script src ="{% static 'heydayzdiary/jquery-3.2.1.min.js' %}"></script>
+<script src ="{% static 'heydayzdiary/jquery-ui.js' %}"></script>
+
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+
+	
+<div class="displayinfo1">{{ day_entry.day_date|date:"Y-m-d" }} <i>{{ day_entry.day_headline }}</i></div>
+<br />
+
+<strong>
+{% for day_entry_location in day_entry.day_entry_location_set.all %}
+	{{day_entry_location.location.location_name}} - 	
+{% endfor %}
+</strong>
+
+{% for exercise in day_entry.exercise_set.all %}
+	<br /> {{ exercise.exercise_type.exercise_type_description }} : {{ exercise.start_time|date:"H:i" }} - {{ exercise.end_time|date:"H:i" }} / {{ exercise.description }}		
+{% endfor %}
+
+{% if day_entry.work_set.all %}
+	<br /> WORK: 
+	{% for work in day_entry.work_set.all %}
+		<br /> {{ work.start_time|date:"H:i" }} - {{ work.end_time|date:"H:i" }} / {{ work.description }}		
+	{% endfor %}
+{% endif %}
+
+{% if day_entry.study_set.all %}
+	<br /> STUDY: 
+	{% for study in day_entry.study_set.all %}
+		{{ study.study_subject.name }} {{ study.start_time|date:"H:i" }} - {{ study.end_time|date:"H:i" }} / {{ study.description }}		
+	{% endfor %}
+{% endif %}
+
+{% if day_entry.day_entry_project_set.all %}
+	<br />PROJECTS: 
+	{% for day_entry_project in day_entry.day_entry_project_set.all %}
+		
+		{{ day_entry_project.project.name }} {{ day_entry_project.start_time|date:"H:i" }} - {{ day_entry_project.end_time|date:"H:i" }} / {{ day_entry_project.description }}
+		
+	{% endfor %}
+{% endif %}
+
+{% if day_entry.meal_set.all %}
+	<br /> MEALS:
+
+	{% for meal in day_entry.meal_set.all %}
+		
+		{{ meal.meal_type.meal_type_description }} {{ meal.meal_time|date:"H:i" }}  / {{ meal.description }} ( {{ meal.calories }} ) - 
+		
+	{% endfor %}
+{% endif %}
+
+{% if day_entry.transaction_set.all %}
+	<br /> MONEY: 
+	{% for transaction in day_entry.transaction_set.all %}		
+		{{ transaction.transaction_type.description }} {{ transaction.transaction_time|date:"H:i" }}  / {{ transaction.description }} ( {{ transaction.amount }} ) 		
+	{% endfor %}
+{% endif %}
+{% if day_entry.person_set.all %}
+	<br />PEOPLE: 
+	{% for day_entry_person in day_entry.day_entry_person_set.all %}		
+		{{ day_entry_person.person.name }} -		
+	{% endfor %}
+{% endif %}
+
+<br />
+
+SLEEP: length {{ day_entry.sleep_duration }} quality {{ day_entry.sleep_quality }} wake-up {{ day_entry.wake_up_time|date:"H:i" }} <i>{{ day_entry.sleep_notes }}</i>
+
+<br />
+WEATHER: sun {{ day_entry.weather_sun }}/10 rain {{ day_entry.weather_rain }}/10  wind {{ day_entry.weather_wind }}/10 temp {{ day_entry.weather_temperature }}C <i>{{ day_entry.weather_notes }}</i>
+
+<br /><br />
+<div class="displaytext1">{{ day_entry.day_main_text|linebreaksbr }}</div>
+
+
+
+<p><i>
+Created: {{ day_entry.date_created }}
+Last Updated: {{ day_entry.date_updated }}
+</i></p>
+
+ <p>
+ <a href="{% url 'heydayzdiary:detail-update' day_entry.id %}">Day Edit View</a>
+ </p>
+ 
+<p>
+ <a href="{% url 'heydayzdiary:index' %}">Back to DAYS List</a>
+</p>

@@ -1,0 +1,49 @@
+{% load static %}
+
+<link rel = "stylesheet" type = "text/css" href="{% static 'heydayzdiary/style.css' %}">
+<link rel = "stylesheet" type = "text/css" href="{% static 'heydayzdiary/jquery-ui.min.css' %}">
+<script src ="{% static 'heydayzdiary/jquery-3.2.1.min.js' %}"></script>
+<script src ="{% static 'heydayzdiary/jquery-ui.js' %}"></script>
+<script>
+  $( function() {
+	//sleep duration slider
+    $( "#meal_time_slider" ).slider({
+      range: "min",
+      value: 0,
+      min: 0,
+      max: 1440,
+      slide: function( event, ui ) {
+	  
+		var hours1 = String(Math.floor(ui.value / 60));
+				var minutes1 = String(ui.value - (hours1 * 60));
+				if (ui.value == 1440){
+					hours1 = "23";
+					minutes1 = "59";
+				}
+
+				if (hours1.length == 1) hours1 = '0' + hours1;
+				if (minutes1.length == 1) minutes1 = '0' + minutes1;
+				if (minutes1 == 0) minutes1 = '00';
+
+				$('#id_meal_time').val(hours1 + ':' + minutes1);
+				
+       
+      }
+    });
+    
+	
+  } );
+  </script>
+<h1>Add a new Meal</h1>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="" method="post">
+    {% csrf_token %}
+	<div id="meal_time_slider"></div>
+    {{ form.as_p }}
+	<input type=hidden name="day_entry_id" value="{{ d_id }}">
+    <input type="submit" value="Submit" />
+ </form>
+  <p>
+ <a href="{% url 'heydayzdiary:detail-update' d_id %}">Back to DAY</a>
+ </p>

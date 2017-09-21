@@ -1,0 +1,37 @@
+{% load static %}
+
+
+<link rel = "stylesheet" type = "text/css" href="{% static 'heydayzdiary/style.css' %}">
+<link rel = "stylesheet" type = "text/css" href="{% static 'heydayzdiary/jquery-ui.min.css' %}">
+<script src ="{% static 'heydayzdiary/jquery-3.2.1.min.js' %}"></script>
+<script src ="{% static 'heydayzdiary/jquery-ui.js' %}"></script>
+
+
+<script>
+    $(document).ready(function() {
+        $('#id_start_date').datepicker({ dateFormat: 'yy-mm-dd' });
+        $('#id_end_date').datepicker({ dateFormat: 'yy-mm-dd' });
+    });
+</script>
+
+
+ 
+<h1>Update Project: {{ project.location_name }}</h1>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+<form action="{% url 'heydayzdiary:project-update' pk=project.id %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit" />
+ </form>
+ <p>
+ <a href="{% url 'heydayzdiary:project-add' %}">Add NEW Project</a>
+</p>
+ <p>
+ <a href="{% url 'heydayzdiary:project-delete' project.id%}">Delete this Project</a>
+</p>
+<p>
+ <a href="{% url 'heydayzdiary:project-list' %}">View All Projects</a>
+</p>
+<p>
+ <a href="{% url 'heydayzdiary:index' %}">Back to DAYS List</a>
+</p>

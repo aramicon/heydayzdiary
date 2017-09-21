@@ -1,0 +1,14 @@
+{% load static %}
+
+<link rel = "stylesheet" type = "text/css" href="{% static 'heydayzdiary/style.css' %}">
+
+<h1>Work: DELETE</h1>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="" method="post">{% csrf_token %}
+    <p>Are you sure you want to delete the Work "{{ object }}"?</p>
+    <input type="submit" value="Confirm" />
+	<p>
+		 <a href="{% url 'heydayzdiary:work-update' day_entry_id=work.day_entry.id pk=work.id %}">Back to Work edit page</a>
+	</p>
+</form>

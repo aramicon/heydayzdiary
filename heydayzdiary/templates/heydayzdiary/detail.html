@@ -1,0 +1,11 @@
+<h1>{{ day_entry.day_headline }}</h1>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url 'heydayzdiary:detail' day_entry.id %}" method = "post">
+{% csrf_token %}
+
+<input type="text" name="day_headline" id="day_headline" maxlength="200" placeholder = "Day Headline" value = "{{ day_entry.day_headline }}">
+<input type="text" name="day_main_text" id="day_main_text" maxlength="1000" placeholder = "Day Main Text" value = "{{ day_entry.day_main_text }}">
+
+<input type = "submit" value = "Save" />
+</form>

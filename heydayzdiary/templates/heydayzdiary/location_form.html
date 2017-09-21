@@ -1,0 +1,23 @@
+{% load static %}
+
+<link rel = "stylesheet" type = "text/css" href="{% static 'heydayzdiary/style.css' %}">
+
+<h1>Update Location: {{ location.location_name }}</h1>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+<form action="{% url 'heydayzdiary:location-update' pk=location.id %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit" />
+ </form>
+ <p>
+ <a href="{% url 'heydayzdiary:location-add' %}">Add NEW Locations</a>
+</p>
+ <p>
+ <a href="{% url 'heydayzdiary:location-delete' location.id%}">Delete this Location</a>
+</p>
+<p>
+ <a href="{% url 'heydayzdiary:location' %}">View All Locations</a>
+</p>
+<p>
+ <a href="{% url 'heydayzdiary:index' %}">Back to DAYS List</a>
+</p>
