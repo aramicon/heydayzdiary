@@ -36,7 +36,10 @@ class Exercise(models.Model):
     exercise_type = models.ForeignKey(Exercise_type, on_delete=models.CASCADE)
     start_time = models.TimeField()
     end_time = models.TimeField()
-    description = models.TextField(blank=True) 
+    description = models.TextField(blank=True)
+    intensity = models.IntegerField(blank=True)
+    distance = models.DecimalField(blank=True,max_digits=8, decimal_places=2)
+    web_tracking_system_url = models.URLField(blank=True)
     def __str__(self):
         return self.description
     def get_absolute_url(self):

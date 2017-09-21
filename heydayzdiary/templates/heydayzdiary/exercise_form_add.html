@@ -5,6 +5,22 @@
 <script src ="{% static 'heydayzdiary/jquery-3.2.1.min.js' %}"></script>
 <script src ="{% static 'heydayzdiary/jquery-ui.js' %}"></script>
 <script src ="{% static 'heydayzdiary/slider_time_selector.js' %}"></script>
+<script>
+	 $( function() {
+	 	//INTENSITY slider
+		 $( "#intensity_slider" ).slider({
+		  range: "min",
+		  value: 5,
+		  min: 1,
+		  max: 10,
+		  step:1,
+		  slide: function( event, ui ) {
+			$( "#id_intensity" ).val( ui.value );
+		  }
+		});
+		$( "#id_intensity" ).val( $( "#intensity_slider" ).slider( "value" ) );
+	});
+</script>
 
 <h1>Add a new Exercise</h1>
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
@@ -18,6 +34,7 @@
 		</div>
 	</div>
     {{ form.as_p }}
+	<div id="intensity_slider"></div>
 	<input type=hidden name="day_entry_id" value="{{ d_id }}">
     <input type="submit" value="Submit" />
  </form>

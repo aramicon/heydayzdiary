@@ -61,13 +61,13 @@ class DetailDelete(DeleteView):
 class ExerciseUpdate(UpdateView):
     model = Exercise
     form = ExerciseForm
-    fields=['start_time','end_time','description','exercise_type']
+    fields=['start_time','end_time','description','exercise_type','web_tracking_system_url','distance','intensity']
 
 class ExerciseCreate(CreateView):
     model = Exercise
     form = ExerciseForm
     template_name = 'heydayzdiary/exercise_form_add.html'
-    fields=['start_time','end_time','description','exercise_type']
+    fields=['start_time','end_time','description','exercise_type','web_tracking_system_url','distance','intensity']
     # def dispatch(self, *args, **kwargs):
         # self.day_entry = get_object_or_404(Day_entry, pk=kwargs['day_entry_id'])
         # return super(ExerciseCreate, self).dispatch(*args, **kwargs)
