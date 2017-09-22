@@ -1,0 +1,14 @@
+{% extends 'heydayzdiary/base.html' %}
+{% block content %}
+	
+	<h1>Exercise: DELETE</h1>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+	<form action="" method="post">{% csrf_token %}
+		<p>Are you sure you want to delete the Exercise "{{ object }}"?</p>
+		<input type="submit" value="Confirm" />
+		<p>
+			 <a href="{% url 'heydayzdiary:exercise-update' day_entry_id=exercise.day_entry.id pk=exercise.id %}">Back to Exercise edit page</a>
+		</p>
+	</form>
+{% endblock %}

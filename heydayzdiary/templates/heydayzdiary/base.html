@@ -1,0 +1,29 @@
+{% load staticfiles %}
+<html>
+    <head>
+        <title>HeyDayzDiary</title>       
+        <link rel = "stylesheet" type = "text/css" href="{% static 'heydayzdiary/style.css' %}">
+		<link rel = "stylesheet" type = "text/css" href="{% static 'heydayzdiary/jquery-ui.css' %}">
+		<script src ="{% static 'heydayzdiary/jquery-3.2.1.min.js' %}"></script>
+		<script src ="{% static 'heydayzdiary/jquery-ui.js' %}"></script>
+    </head>
+	<body>
+		<div class="page-header">
+			<h1>HeyDayzDiary</h1> 
+			 <a href="{% url 'heydayzdiary:days' %}">DAYS</a>
+			 <a href="{% url 'heydayzdiary:days' %}">SETTINGS</a>			
+			<span class = "userinfo" > You are logged in as {{ user.get_username }}	 | <a href="{% url 'heydayzdiary:logout' %}">Logout</a>	</span>		 
+		</div>
+		<div class="content container">
+			<div class="row">
+				<div class="col-md-8">
+				{% block content %}
+				{% endblock %}
+				</div>
+			</div>
+		</div>
+		<div class="page-footer">
+		Heydayzdiary 2017
+		</div>
+	</body>
+</html>

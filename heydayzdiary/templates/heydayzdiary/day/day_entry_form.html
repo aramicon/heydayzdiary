@@ -1,0 +1,378 @@
+{% extends 'heydayzdiary/base.html' %}
+{% block content %}
+	<script>
+		$(document).ready(function() {
+			$('#day_date').datepicker({ dateFormat: 'yy-mm-dd' });
+			
+				
+		});
+	</script>
+	 <script>
+	  $( function() {
+		//sleep duration slider
+		$( "#sleep_duration_slider" ).slider({
+		  range: "min",
+		  value: {{ day_entry.sleep_duration }}*10,
+		  min: 0,
+		  max: 240,
+		  slide: function( event, ui ) {
+			$( "#sleep_duration" ).val( ui.value/10 );
+		  }
+		});
+		if($("#sleep_duration")){
+			$( "#sleep_duration" ).val( $( "#sleep_duration_slider" ).slider( "value" )/10 );
+		}
+		
+		//sleep quality slider
+		 $( "#sleep_quality_slider" ).slider({
+		  range: "min",
+		  value: {{ day_entry.sleep_quality }},
+		  min: 1,
+		  max: 10,
+		  step:1,
+		  slide: function( event, ui ) {
+			$( "#sleep_quality" ).val( ui.value );
+		  }
+		});
+		if($("#sleep_quality")){
+			$( "#sleep_quality" ).val( $( "#sleep_quality_slider" ).slider( "value" ) );
+		}
+		
+		//weather SUN slider
+		 $( "#weather_sun_slider" ).slider({
+		  range: "min",
+		  value: {{ day_entry.weather_sun|default_if_none:0 }},
+		  min: 1,
+		  max: 10,
+		  step:1,
+		  slide: function( event, ui ) {
+			$( "#weather_sun" ).val( ui.value );
+		  }
+		});
+		if($("#weather_sun")){
+			$( "#weather_sun" ).val( $( "#weather_sun_slider" ).slider( "value" ) );
+		}
+		
+		//weather RAIN slider
+		 $( "#weather_rain_slider" ).slider({
+		  range: "min",
+		  value: {{ day_entry.weather_rain|default_if_none:0 }},
+		  min: 1,
+		  max: 10,
+		  step:1,
+		  slide: function( event, ui ) {
+			$( "#weather_rain" ).val( ui.value );
+		  }
+		});
+		if($("#weather_rain")){
+			$( "#weather_rain" ).val( $( "#weather_rain_slider" ).slider( "value" ) );
+		}
+		
+		//weather WIND slider
+		 $( "#weather_wind_slider" ).slider({
+		  range: "min",
+		  value: {{ day_entry.weather_wind|default_if_none:0 }},
+		  min: 1,
+		  max: 10,
+		  step:1,
+		  slide: function( event, ui ) {
+			$( "#weather_wind" ).val( ui.value );
+		  }
+		});
+		if($("#weather_wind")){
+			$( "#weather_wind" ).val( $( "#weather_wind_slider" ).slider( "value" ) );
+		}
+		//weather TEMPERATURE slider
+		 $( "#weather_temperature_slider" ).slider({
+		  range: "min",
+		  value: {{ day_entry.weather_temperature|default_if_none:0 }},
+		  min: -30,
+		  max: 55,
+		  step:1,
+		  slide: function( event, ui ) {
+			$( "#weather_temperature" ).val( ui.value );
+		  }
+		});
+		if($("#weather_temperature")){
+			$( "#weather_temperature" ).val( $( "#weather_temperature_slider" ).slider( "value" ) );
+		}
+		//wake-up time slider
+		$( "#wake_up_time_slider" ).slider({
+		  range: "min",
+		  value: 0,
+		  min: 0,
+		  max: 1440,
+		  slide: function( event, ui ) {
+		  
+			var hours1 = String(Math.floor(ui.value / 60));
+					var minutes1 = String(ui.value - (hours1 * 60));
+					if (ui.value == 1440){
+						hours1 = "23";
+						minutes1 = "59";
+					}
+
+					if (hours1.length == 1) hours1 = '0' + hours1;
+					if (minutes1.length == 1) minutes1 = '0' + minutes1;
+					if (minutes1 == 0) minutes1 = '00';
+
+					$('#wake_up_time').val(hours1 + ':' + minutes1);
+					
+		   
+		  }
+		});
+		
+		//initialise the slider for the meal time
+		var slider_time_total_minutes = 0;	
+		
+		if ($('#wake_up_time').val()){
+			var slider_time = $('#wake_up_time').val();
+			if(slider_time.indexOf(":") > 0){ //format should be 23:23
+				//parse and convert to a number of minutes (0-1440)
+				var slider_time_hours = slider_time.substring(0, slider_time.indexOf(":"));
+				slider_time = slider_time.substring(slider_time.indexOf(":")+1);
+				var slider_time_minutes = slider_time // slider_time.substring(0, slider_time.indexOf(":"));
+				slider_time_total_minutes = (parseInt(slider_time_hours)*60) + parseInt(slider_time_minutes);	
+			}		
+		}
+		if($("#wake_up_time_slider")){
+			$( "#wake_up_time_slider" ).slider('value',slider_time_total_minutes);
+		}
+		
+		// tabs
+		 $( "#tabs" ).tabs();
+		 
+		 //accordian for day info
+		 $( "#day_entry_accordion" ).accordion({
+		  collapsible: true,
+		  active: false,
+		  heightStyle: "content"
+		});
+		
+	  } );
+	  </script>
+
+	<h1>{{ day_entry.day_headline }}</h1>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	<!-- <form action="{% url 'heydayzdiary:detail-update' day_entry.id %}" method="post"> -->
+		<!-- {% csrf_token %} -->
+		<!-- {{ form }} -->
+		<!-- <input type="submit" value="Submit" /> -->
+	<!-- </form> -->
+
+	<form action="{% url 'heydayzdiary:detail-update' day_entry.id %}" method = "post">
+	{% csrf_token %}
+	<p>
+	<strong>DATE: </strong><br />
+	<input type="text" name="day_date" id="day_date" maxlength="200" placeholder = "Day Date" value = "{{ day_entry.day_date|date:"Y-m-d" }}">
+	 {{ day_entry.day_date|date:"D" }}
+
+	</p>
+	<p>
+	<strong>HEADLINE: </strong><br />
+	<input type="text" name="day_headline" id="day_headline" maxlength="200" placeholder = "Day Headline" value = "{{ day_entry.day_headline }}">
+
+	</p>
+	<p>
+	<strong>DIARY TEXT: </strong><br />
+	<textarea  rows="20" cols="100" name="day_main_text" id="day_main_text" placeholder = "Day Main Text">{{ day_entry.day_main_text }}</textarea>
+	</p>
+
+
+
+	<div id="day_entry_accordion">
+	  <h3>Sleep</h3>
+	  <div>
+		<p><label for="sleep_duration">Hours of Sleep:</label>
+			<input type="text" id="sleep_duration" name="sleep_duration" readonly style="border:0; color:#f6931f; font-weight:bold;" value = "{{ day_entry.sleep_duration }}">
+			<div id="sleep_duration_slider"></div>
+
+			<label for="sleep_quality">Sleep Quality:</label>
+			<input type="text" id="sleep_quality" name = "sleep_quality" readonly style="border:0; color:#f6931f; font-weight:bold;" value = "{{ day_entry.sleep_quality }}">
+			<div id="sleep_quality_slider"></div>
+			<label for="sleep_notes">Notes</label>
+			<textarea  rows="5" cols="100" name="sleep_notes" id="sleep_notes" placeholder = "Sleep Notes">{{ day_entry.sleep_notes }}</textarea>
+			<br />		
+			<label for="start_time">Wake/Get Up Time:</label>
+			<div id="wake_up_time_slider"></div>		
+			<input type="text" name="wake_up_time" required="" id="wake_up_time"  value = "{{ day_entry.wake_up_time|date:'H:i' }}">
+			
+		</p>
+			
+		
+	  </div>
+	  <h3>Weather</h3>
+	  <div>
+		<p>
+		<label for="weather_sun">Sun</label>
+		<input type="text" id="weather_sun" name = "weather_sun" readonly style="border:0; color:#f6931f; font-weight:bold;" value = "{{ day_entry.weather_sun }}">
+		<div id="weather_sun_slider"></div>
+		<label for="weather_rain">Rain</label>
+		<input type="text" id="weather_rain" name = "weather_rain" readonly style="border:0; color:#f6931f; font-weight:bold;" value = "{{ day_entry.weather_rain }}">
+		<div id="weather_rain_slider"></div>
+		<label for="weather_wind">Wind</label>
+		<input type="text" id="weather_wind" name = "weather_wind" readonly style="border:0; color:#f6931f; font-weight:bold;" value = "{{ day_entry.weather_wind }}">
+		<div id="weather_wind_slider"></div>
+		<label for="weather_temperature">Temperature</label>
+		<input type="text" id="weather_temperature" name = "weather_temperature" readonly style="border:0; color:#f6931f; font-weight:bold;" value = "{{ day_entry.weather_temperature }}">
+		<div id="weather_temperature_slider"></div>	
+		<label for="weather_notes">Notes</label>
+		<textarea  rows="5" cols="100" name="weather_notes" id="weather_notes" placeholder = "Weather Notes">{{ day_entry.weather_notes }}</textarea>
+
+		</p>
+	  </div>
+	  
+	</div>
+
+	<br />
+	<input type = "submit" value = "Save" />
+	</form>
+
+	<div id="tabs">
+	  <ul>
+		<li><a href="#tabs_work">Work</a></li>
+		<li><a href="#tabs_study">Study</a></li>
+		<li><a href="#tabs_exercise">Exercise</a></li>
+		<li><a href="#tabs_projects">Hobbies/Projects</a></li>
+		<li><a href="#tabs_locations">Locations</a></li>
+		<li><a href="#tabs_people">People</a></li>
+		<li><a href="#tabs_meals">Meals/Food</a></li>
+		<li><a href="#tabs_money">Money</a></li>
+	  </ul>
+	  <div id="tabs_work">
+			<p>
+			<ul>
+				{% for work in day_entry.work_set.all %}
+					<li>FROM 
+						<strong>{{ work.start_time|date:"H:i" }}</strong>
+						TO 
+						<strong>{{ work.end_time|date:"H:i" }}</strong>
+						: 
+						<a href="{% url 'heydayzdiary:work-update' day_entry_id=day_entry.id pk=work.id %}">{{work.description}}</a>
+					</li>			
+				{% endfor %}
+					<li><a href="{% url 'heydayzdiary:work-add' day_entry_id=day_entry.id %}">ADD WORK</a></li>
+				</ul>
+			</p>
+	  </div>
+	   <div id="tabs_study">
+			<p>
+				<ul>
+				{% for study in day_entry.study_set.all %}
+					<li>{{ study.study_subject.name }}
+						<a href="{% url 'heydayzdiary:study-update' day_entry_id=day_entry.id pk=study.id %}">
+							<strong>{{ study.start_time|date:"H:i" }}</strong>-					 
+							<strong>{{ study.end_time|date:"H:i" }}</strong>
+							{{study.description}}
+						</a>
+					</li>			
+				{% endfor %}
+					<li><a href="{% url 'heydayzdiary:study-add' day_entry_id=day_entry.id %}">ADD STUDY</a></li>
+					<a href="{% url 'heydayzdiary:study_subject-list' %}">View/Manage STUDY SUBJECTS</a>
+				</ul>
+			</p>
+	  </div>
+	  <div id="tabs_exercise">
+			<p>
+				<ul>
+				{% for exercise in day_entry.exercise_set.all %}
+					<li>FROM 
+						<strong>{{ exercise.start_time|date:"H:i" }}</strong>
+						TO 
+						<strong>{{ exercise.end_time|date:"H:i" }}</strong>
+						: 
+						<a href="{% url 'heydayzdiary:exercise-update' day_entry_id=day_entry.id pk=exercise.id %}">{{exercise.description}}</a>
+					</li>			
+				{% endfor %}
+					<li><a href="{% url 'heydayzdiary:exercise-add' day_entry_id=day_entry.id %}">ADD EXERCISE</a></li>
+				</ul>
+			</p>
+	  </div>
+	   <div id="tabs_projects">
+			<p>
+				<ul>
+				{% for day_entry_project in day_entry.day_entry_project_set.all %}
+					<li> {{day_entry_project.project.name}} 
+					<a href="{% url 'heydayzdiary:day_entry_project-update' day_entry_id=day_entry.id pk=day_entry_project.id %}"><strong>{{ day_entry_project.start_time|date:"H:i" }}</strong>-<strong>{{ day_entry_project.end_time|date:"H:i" }}</strong> {{ day_entry_project.description|truncatechars:50 }} </a> 
+					</li>	
+				{% endfor %}
+				</ul>
+				<a href="{% url 'heydayzdiary:day_entry_project-add' day_entry_id=day_entry.id %}">ADD Project Work for Day</a><br />
+				<a href="{% url 'heydayzdiary:project-list' %}">View/Manage Projects</a>
+			</p>
+	  </div>
+	  <div id="tabs_locations">
+		<p>
+			<ul>
+			{% for day_entry_location in day_entry.day_entry_location_set.all %}
+				<li><a href="{% url 'heydayzdiary:day_entry_location-update' day_entry_id=day_entry.id pk=day_entry_location.id %}">{{day_entry_location.location.location_name}}</a>
+				</li>	
+			{% endfor %}
+			</ul>
+
+		<a href="{% url 'heydayzdiary:day_entry_location-add' day_entry_id=day_entry.id %}">ADD Location</a><br />
+		<a href="{% url 'heydayzdiary:location' %}">View/Manage Locations</a>
+		</p>
+	  </div>
+	  <div id="tabs_people">
+		<p>
+			<ul>
+			{% for day_entry_person in day_entry.day_entry_person_set.all %}
+				<li> <a href="{% url 'heydayzdiary:day_entry_person-update' day_entry_id=day_entry.id pk=day_entry_person.id %}">{{day_entry_person.person.name}}</a>
+				</li>	
+			{% endfor %}
+			</ul>
+			<a href="{% url 'heydayzdiary:day_entry_person-add' day_entry_id=day_entry.id %}">ADD Person to this Day</a><br />
+			<a href="{% url 'heydayzdiary:person-list' %}">View/Manage Persons</a>
+			</p>
+	  </div>
+	   <div id="tabs_meals">
+			<p>
+				<ul>
+				{% for meal in day_entry.meal_set.all %}
+					<li>{{ meal.meal_type.meal_type_description}} AT 
+						<strong>{{ meal.meal_time|date:"H:i" }}</strong>
+						: 
+						<a href="{% url 'heydayzdiary:meal-update' day_entry_id=day_entry.id pk=meal.id %}">{{meal.description}}</a>
+					</li>			
+				{% endfor %}
+					<li><a href="{% url 'heydayzdiary:meal-add' day_entry_id=day_entry.id %}">ADD MEAL</a></li>
+				</ul>
+			</p>
+	  </div>
+	   <div id="tabs_money">
+			<p>
+				<ul>
+				{% for transaction in day_entry.transaction_set.all %}
+					<li>{{ transaction.transaction_type.transaction_type_description}} AT 
+						<strong>{{ transaction.transaction_time|date:"H:i" }}</strong>
+						: 
+						<a href="{% url 'heydayzdiary:transaction-update' day_entry_id=day_entry.id pk=transaction.id %}">{{transaction.description}} : {{transaction.amount}}</a>
+					</li>			
+				{% endfor %}
+					<li><a href="{% url 'heydayzdiary:transaction-add' day_entry_id=day_entry.id %}">ADD TRANSACTION</a></li>
+				</ul>
+			</p>
+	  </div>
+	</div>
+
+
+
+
+
+
+
+
+
+	<p><i>
+	Created: {{ day_entry.date_created }}
+	Last Updated: {{ day_entry.date_updated }}
+	</i></p>
+
+	 <p>
+	 <a href="{% url 'heydayzdiary:read-format' day_entry.id %}">Read-Friendly View</a>
+	 </p>
+	 
+	<p>
+	 <a href="{% url 'heydayzdiary:days' %}">Back to DAYS List</a>
+	</p>
+{% endblock %}

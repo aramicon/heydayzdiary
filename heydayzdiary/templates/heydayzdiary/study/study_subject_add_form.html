@@ -1,0 +1,19 @@
+{% extends 'heydayzdiary/base.html' %}
+{% block content %}
+
+	<h1>Add a new Study_subject</h1>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	<form action="" method="post">
+		{% csrf_token %}
+		{{ form.as_p }} 	
+		<input type="submit" value="Submit" />
+	 </form>
+	 <p>
+	 <a href="{% url 'heydayzdiary:study_subject-list' %}">View All Study_subjects</a>
+	</p>
+	<p>
+	 <a href="{% url 'heydayzdiary:days' %}">Back to DAYS List</a>
+	</p>
+
+{% endblock %}
+

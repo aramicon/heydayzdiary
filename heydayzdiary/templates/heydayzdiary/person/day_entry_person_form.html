@@ -1,0 +1,30 @@
+{% extends 'heydayzdiary/base.html' %}
+{% block content %}
+	{% load static %}
+	<script src ="{% static 'heydayzdiary/slider_time_selector.js' %}"></script>
+
+	<h1>{{ day_entry_person.id }}</h1>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	<form action="{% url 'heydayzdiary:day_entry_person-update' day_entry_id=day_entry_person.day_entry_id pk=day_entry_person.id %}" method="post">
+		{% csrf_token %}
+		<div id="time-range">
+			<p>Interaction Duration/Period: <span class="slider-duration"></span></p>
+			<div class="sliders_step1">
+				<div id="slider-range"></div>
+			</div>
+		</div>
+		{{ form.as_p }}
+		<input type="submit" value="Submit" />
+	 </form>
+
+	 <p>
+	 <a href="{% url 'heydayzdiary:person-add' %}">Add a NEW Person</a>
+	</p>
+	  <p>
+	 <a href="{% url 'heydayzdiary:day_entry_person-delete' day_entry_id=day_entry_person.day_entry_id pk=day_entry_person.id %}">Delete this Person from the Day</a>
+	 </p>
+	 <p>
+	 <a href="{% url 'heydayzdiary:detail-update' day_entry_person.day_entry_id %}">Back to DAY</a>
+	 </p>
+	 
+{% endblock %}	

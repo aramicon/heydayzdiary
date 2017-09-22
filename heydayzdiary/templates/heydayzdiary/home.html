@@ -1,0 +1,14 @@
+{% load static %}
+
+<link rel = "stylesheet" type = "text/css" href="{% static 'heydayzdiary/style.css' %}">
+<div class = "frontpage">
+WELCOME TO HEYDAYZDIARY!
+
+<p>
+View <a href="{% url 'heydayzdiary:days' %}">DAYS</a>
+</p>
+<p>
+<a href="{% url 'heydayzdiary:signup' %}">SIGNUP</a>
+</p>	
+
+</div>

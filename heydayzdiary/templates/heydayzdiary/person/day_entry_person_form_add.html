@@ -1,0 +1,29 @@
+{% extends 'heydayzdiary/base.html' %}
+{% block content %}
+{% load static %}
+
+	<script src ="{% static 'heydayzdiary/slider_time_selector.js' %}"></script>
+
+	<h1>Add a new Person to a Day: {{ day_entry_location.id }}</h1>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	<form action="" method="post">
+		{% csrf_token %}
+		<div id="time-range">
+			<p>Interaction Duration/Period: <span class="slider-duration"></span></p>
+			<div class="sliders_step1">
+				<div id="slider-range"></div>
+			</div>
+		</div>
+		{{ form.as_p }} 
+		<!-- <select> -->
+			<!-- {% for person_i in all_persons %} -->
+				<!-- <option value="{{ person_i.name }}">{{ person_i.name }}</option> -->
+			<!-- {% endfor %}   -->
+		<!-- </select> -->
+		<input type=hidden name="day_entry_id" value="{{ d_id }}">
+		<input type="submit" value="Submit" />
+	 </form>
+	 <p>
+	 <a href="{% url 'heydayzdiary:person-add' %}">Add a NEW person</a>
+	</p>
+{% 	endblock %}

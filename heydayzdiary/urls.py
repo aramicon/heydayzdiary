@@ -1,13 +1,21 @@
 from django.conf.urls import url
+from django.contrib import admin
+from django.contrib.auth import views as auth_views
 
 from . import views
 
 app_name='heydayzdiary'
 
 urlpatterns = [
+    #home page
+	url(r'^home/$',views.HomeView.as_view(),name='home'),
     # ex: /heydayzdiary/
-    url(r'^$',views.IndexView.as_view(),name='index'),
-    # ex: /polls/5/
+    url(r'^days/$',views.DaysView.as_view(),name='days'),
+    #login/logout/signup
+    url(r'^login/$', auth_views.login, name='login'),
+    url(r'^logout/$', auth_views.logout, {'next_page': 'heydayzdiary:home'}, name='logout'),
+    url(r'^signup/$', views.signup, name='signup'),
+    url(r'^admin/', admin.site.urls),
     #rl(r'^(?P<pk>[0-9]+)/$', views.DetailView.as_view(),name='detail'),
     url(r'^add/$', views.DetailCreate.as_view(), name='detail-add'),
     url(r'^(?P<pk>[0-9]+)/$', views.DetailUpdate.as_view(), name='detail-update'),

@@ -1,0 +1,15 @@
+{% extends 'heydayzdiary/base.html' %}
+{% block content %}
+
+	<h1>Day Entry Project: DELETE</h1>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+	<form action="" method="post">{% csrf_token %}
+		<p>Are you sure you want to delete this Project from the Day? "{{ object }}"?</p>
+		<input type="submit" value="Confirm" />
+		<p>
+			 <a href="{% url 'heydayzdiary:day_entry_project-update' day_entry_id=day_entry_project.day_entry.id pk=day_entry_project.id %}">Back to Day Entry Project edit page</a>
+		</p>
+	</form>
+	
+{% endblock %}

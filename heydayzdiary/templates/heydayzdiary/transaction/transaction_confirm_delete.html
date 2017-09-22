@@ -1,0 +1,15 @@
+{% extends 'heydayzdiary/base.html' %}
+{% block content %}
+
+	<h1>Transaction: DELETE</h1>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+	<form action="" method="post">{% csrf_token %}
+		<p>Are you sure you want to delete the Transaction "{{ object }}"?</p>
+		<input type="submit" value="Confirm" />
+		<p>
+			 <a href="{% url 'heydayzdiary:transaction-update' day_entry_id=transaction.day_entry.id pk=transaction.id %}">Back to Transaction edit page</a>
+		</p>
+	</form>
+	
+{% endblock %}

@@ -1,20 +1,22 @@
 from django.db import models
 from django.urls import reverse
+from django.conf import settings
 
 class Day_entry(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     day_headline = models.CharField(max_length=200)
     day_date = models.DateTimeField()
     date_updated = models.DateTimeField('Date updated',auto_now=True)
     date_created = models.DateTimeField('Date Created',auto_now_add=True)
     day_main_text = models.TextField()
     sleep_duration = models.DecimalField(blank=True,max_digits=3, decimal_places=1)
-    sleep_quality = models.IntegerField(blank=True)
-    wake_up_time = models.TimeField(blank=True)
+    sleep_quality = models.IntegerField(blank=True, null=True)
+    wake_up_time = models.TimeField(blank=True, null=True)
     sleep_notes = models.TextField(blank=True)
-    weather_rain = models.IntegerField(blank=True)
-    weather_sun = models.IntegerField(blank=True)
-    weather_wind = models.IntegerField(blank=True)
-    weather_temperature = models.IntegerField(blank=True)
+    weather_rain = models.IntegerField(blank=True, null=True)
+    weather_sun = models.IntegerField(blank=True, null=True)
+    weather_wind = models.IntegerField(blank=True, null=True)
+    weather_temperature = models.IntegerField(blank=True, null=True)
     weather_notes = models.TextField(blank=True)
     
     def __str__(self):
@@ -31,14 +33,15 @@ class Exercise_type(models.Model):
     def get_absolute_url(self):
         return reverse('heydayzdiary:exercise_type-update',kwargs={'pk':self.pk})
 
-class Exercise(models.Model):
+class Exercise(models.Model):    
     day_entry = models.ForeignKey(Day_entry, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     exercise_type = models.ForeignKey(Exercise_type, on_delete=models.CASCADE)
     start_time = models.TimeField()
     end_time = models.TimeField()
     description = models.TextField(blank=True)
-    intensity = models.IntegerField(blank=True)
-    distance = models.DecimalField(blank=True,max_digits=8, decimal_places=2)
+    intensity = models.IntegerField(blank=True, null=True)
+    distance = models.DecimalField(max_digits=8, decimal_places=2,blank=True, null=True)
     web_tracking_system_url = models.URLField(blank=True)
     def __str__(self):
         return self.description
@@ -55,6 +58,7 @@ class Meal_type(models.Model):
 class Meal(models.Model):
     day_entry = models.ForeignKey(Day_entry, on_delete=models.CASCADE)
     meal_type = models.ForeignKey(Meal_type, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     meal_time = models.TimeField()
     description = models.TextField(blank=True)
     calories = models.IntegerField(blank=True)
@@ -73,6 +77,7 @@ class Transaction_type(models.Model):
 class Transaction(models.Model):
     day_entry = models.ForeignKey(Day_entry, on_delete=models.CASCADE)
     transaction_type = models.ForeignKey(Transaction_type, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     transaction_time = models.TimeField()
     description = models.TextField(blank=True)
     amount = models.DecimalField(blank=True,max_digits=8, decimal_places=2)
@@ -83,6 +88,7 @@ class Transaction(models.Model):
 
 class Work(models.Model):
     day_entry = models.ForeignKey(Day_entry, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     start_time = models.TimeField()
     end_time = models.TimeField()
     description = models.TextField(blank=True) 
@@ -93,6 +99,7 @@ class Work(models.Model):
 class Study_Subject(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     def __str__(self):
         return self.name
     def get_absolute_url(self):
@@ -101,6 +108,7 @@ class Study_Subject(models.Model):
 class Study(models.Model):
     day_entry = models.ForeignKey(Day_entry, on_delete=models.CASCADE)
     study_subject = models.ForeignKey(Study_Subject, on_delete=models.CASCADE, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     start_time = models.TimeField()
     end_time = models.TimeField()
     description = models.TextField(blank=True) 
@@ -111,6 +119,7 @@ class Study(models.Model):
 
 class Location(models.Model):
     location_name = models.CharField(max_length=200)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     def __str__(self):
         return self.location_name
     def get_absolute_url(self):
@@ -119,12 +128,14 @@ class Location(models.Model):
 class Day_entry_Location(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     day_entry = models.ForeignKey(Day_entry, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     def get_absolute_url(self):
         return reverse('heydayzdiary:day_entry_location-update', kwargs={'day_entry_id':self.day_entry_id,'pk': self.pk})
     def __str__(self):
         return self.location.location_name
 
 class Person(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     name = models.CharField(max_length=200)
     date_of_birth = models.DateField(blank=True, null=True)
     description = models.TextField(blank=True)
@@ -149,6 +160,7 @@ class Person(models.Model):
 class Day_entry_Person(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     day_entry = models.ForeignKey(Day_entry, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     start_time = models.TimeField(blank=True, null=True)
     end_time = models.TimeField(blank=True, null=True)
     date_updated = models.DateTimeField('Date updated',auto_now=True)
@@ -159,6 +171,7 @@ class Day_entry_Person(models.Model):
         return self.person.name
 
 class Project(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     name = models.CharField(max_length=200)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
@@ -173,6 +186,7 @@ class Project(models.Model):
 class Day_entry_Project(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     day_entry = models.ForeignKey(Day_entry, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     description = models.TextField(blank=True)
     start_time = models.TimeField(blank=True, null=True)
     end_time = models.TimeField(blank=True, null=True)
