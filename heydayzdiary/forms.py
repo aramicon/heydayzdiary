@@ -1,5 +1,7 @@
 from django import forms
 from .models import Location, Person, Project
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 class DayEntryForm(forms.Form):
     day_headline = forms.CharField(label='Headline', max_length=200)
@@ -45,8 +47,10 @@ class StudyForm(forms.Form):
     description = forms.CharField(label='Description', max_length=500)
     
     def __init__(self,*args,**kwargs):
+        self.user = kwargs.pop('user', None)
         self.fields["day_entry_id"] = forms.CharField(widget=forms.HiddenInput())
         super(StudyForm,self).__init__(self,*args,**kwargs)
+        self.fields['group'].queryset = Group.objects.filter(user = self.user)
 
 class DayEntryLocationForm(forms.Form):
     location = forms.ModelChoiceField(Location.objects.all())
@@ -102,3 +106,17 @@ class ProjectForm(forms.ModelForm):
     start_date = forms.DateField(widget=forms.DateInput(attrs={'class': 'datepicker'}))
     end_date = forms.DateField(widget=forms.DateInput(attrs={'class': 'datepicker'}))
     description = forms.CharField(label='Project Description')
+    
+class UserCreationForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        model = User
+        fields = ("username", "email", "password1", "password2")
+
+    def save(self, commit=True):
+        user = super(UserCreationForm, self).save(commit=False)
+        user.email = self.cleaned_data["email"]
+        if commit:
+            user.save()
+        return user

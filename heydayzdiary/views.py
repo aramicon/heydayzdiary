@@ -9,14 +9,14 @@ from django.utils import timezone
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm
+#from django.contrib.auth.forms import UserCreationForm
 import math
 import sys
 
 
 from .models import Day_entry, Exercise, Work, Study, Day_entry_Location, Location, Day_entry_Person, Person, Day_entry_Project, Project, Meal, Transaction, Study_Subject
 
-from heydayzdiary.forms import DayEntryForm, ExerciseForm, WorkForm, StudyForm, DayEntryLocationForm, LocationForm, PersonForm, DayEntryPersonForm, ProjectForm, DayEntryProjectForm, MealForm, TransactionForm, StudySubjectForm
+from heydayzdiary.forms import UserCreationForm, DayEntryForm, ExerciseForm, WorkForm,DayEntryLocationForm, LocationForm, PersonForm, DayEntryPersonForm, ProjectForm, DayEntryProjectForm, MealForm, TransactionForm, StudySubjectForm, StudyForm
 
 def signup(request):
     if request.method == 'POST':
@@ -271,22 +271,23 @@ class StudyUpdate(LoginRequiredMixin,UpdateView):
     model = Study
     form = StudyForm
     template_name = 'heydayzdiary/study/study_form.html'
-    fields=['study_subject','start_time','end_time','description']
+    fields=['study_subject','start_time','end_time','description']    
     def get_queryset(self):
         base_qs = super(StudyUpdate, self).get_queryset()
         return base_qs.filter(user=self.request.user)
-    def get_queryset(self):
-        base_qs = super(StudyUpdate, self).get_queryset()
-        return base_qs.filter(user=self.request.user)
-
+    def get_context_data(self, **kwargs):
+        context=super(StudyUpdate,self).get_context_data(**kwargs)
+        context['form'].fields['study_subject'].queryset = Study_Subject.objects.filter(user=self.request.user)
+        return context
+    
 class StudyCreate(LoginRequiredMixin,CreateView):
     login_url = 'heydayzdiary:login'
     redirect_field_name = 'heydayzdiary:days'
     model = Study
-    form = StudyForm
+    #form = StudyForm(user = 1)
     template_name = 'heydayzdiary/study/study_form_add.html'
     fields=['study_subject','start_time','end_time','description']
-    
+  
     def form_valid(self, form):
         study = form.save(commit=False)
         day_entry_id = form.data['day_entry_id']
@@ -298,6 +299,7 @@ class StudyCreate(LoginRequiredMixin,CreateView):
     def get_context_data(self, **kwargs):
         context=super(StudyCreate,self).get_context_data(**kwargs)
         context['d_id'] = self.kwargs['day_entry_id']
+        context['form'].fields['study_subject'].queryset = Study_Subject.objects.filter(user=self.request.user)
         return context
 
 class StudyDelete(LoginRequiredMixin,DeleteView):
@@ -364,6 +366,10 @@ class DayEntryLocationUpdate(LoginRequiredMixin,UpdateView):
     def get_queryset(self):
         base_qs = super(DayEntryLocationUpdate, self).get_queryset()
         return base_qs.filter(user=self.request.user)
+    def get_context_data(self, **kwargs):
+        context=super(DayEntryLocationUpdate,self).get_context_data(**kwargs)
+        context['form'].fields['location'].queryset = Location.objects.filter(user=self.request.user)
+        return context
     
 class DayEntryLocationDelete(LoginRequiredMixin,DeleteView):
     login_url = 'heydayzdiary:login'
@@ -396,6 +402,7 @@ class DayEntryLocationCreate(LoginRequiredMixin,CreateView):
     def get_context_data(self, **kwargs):
         context=super(DayEntryLocationCreate,self).get_context_data(**kwargs)
         context['d_id'] = self.kwargs['day_entry_id']
+        context['form'].fields['location'].queryset = Location.objects.filter(user=self.request.user)
         return context
 
 class LocationView(LoginRequiredMixin,generic.ListView):
@@ -417,7 +424,7 @@ class LocationCreate(LoginRequiredMixin,CreateView):
     def form_valid(self, form):
         location = form.save(commit=False)       
         location.user = self.request.user
-        return super(LocationCreate, self).form_valid(form)
+        return super(LocationCreate, self).form_valid(form)    
 
 class LocationUpdate(LoginRequiredMixin,UpdateView):
     login_url = 'heydayzdiary:login'
@@ -451,6 +458,10 @@ class DayEntryPersonUpdate(LoginRequiredMixin,UpdateView):
     def get_queryset(self):
         base_qs = super(DayEntryPersonUpdate, self).get_queryset()
         return base_qs.filter(user=self.request.user)
+    def get_context_data(self, **kwargs):
+        context=super(DayEntryPersonUpdate,self).get_context_data(**kwargs)
+        context['form'].fields['person'].queryset = Person.objects.filter(user=self.request.user)
+        return context
     
 class DayEntryPersonDelete(LoginRequiredMixin,DeleteView):
     login_url = 'heydayzdiary:login'
@@ -463,6 +474,7 @@ class DayEntryPersonDelete(LoginRequiredMixin,DeleteView):
     def get_queryset(self):
         base_qs = super(DayEntryPersonDelete, self).get_queryset()
         return base_qs.filter(user=self.request.user)
+   
 
 class DayEntryPersonCreate(LoginRequiredMixin,CreateView):
     login_url = 'heydayzdiary:login'
@@ -482,6 +494,7 @@ class DayEntryPersonCreate(LoginRequiredMixin,CreateView):
     
     def get_context_data(self, **kwargs):
         context=super(DayEntryPersonCreate,self).get_context_data(**kwargs)
+        context['form'].fields['person'].queryset = Person.objects.filter(user=self.request.user)
         context['d_id'] = self.kwargs['day_entry_id']
         return context
 

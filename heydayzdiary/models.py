@@ -61,7 +61,7 @@ class Meal(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     meal_time = models.TimeField()
     description = models.TextField(blank=True)
-    calories = models.IntegerField(blank=True)
+    calories = models.IntegerField(blank=True,null=True)
     def __str__(self):
         return self.description
     def get_absolute_url(self):
