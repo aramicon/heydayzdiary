@@ -3,7 +3,17 @@
 	{% load static %}
 	<script src ="{% static 'heydayzdiary/slider_time_selector.js' %}"></script>
 
-	<h1>{{ day_entry_project.id }}</h1>
+	<h1>{{ day_entry_project.project.name }} / {{ day_entry_project.description }}</h1>
+	<p>
+		All Project/Hobby work on this Day
+		<ul>
+		{% for day_entry_projectC in day_entry_project.day_entry.day_entry_project_set.all %}
+			<li> <a href="{% url 'heydayzdiary:day_entry_project-update' day_entry_id=day_entry_project.day_entry_id pk=day_entry_projectC.id %}">{{ day_entry_project.project.name }} / {{ day_entry_project.description }}</a>
+			</li>	
+		{% endfor %}
+		</ul>			
+	</p>
+	
 	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 	<form action="{% url 'heydayzdiary:day_entry_project-update' day_entry_id=day_entry_project.day_entry_id pk=day_entry_project.id %}" method="post">
 		{% csrf_token %}
@@ -16,7 +26,9 @@
 		{{ form.as_p }}
 		<input type="submit" value="Submit" />
 	 </form>
-
+	<p>
+		<a href="{% url 'heydayzdiary:day_entry_project-add' day_entry_id=day_entry_project.day_entry_id %}">Add another Project/Hobby period to this Day</a><br />
+	</p>
 	 <p>
 	 <a href="{% url 'heydayzdiary:project-add' %}">Add a NEW Project</a>
 	</p>

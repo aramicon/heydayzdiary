@@ -65,6 +65,10 @@ class StudySubjectForm(forms.Form):
 
 class LocationForm(forms.Form):
     location_name = forms.CharField(label='Location Name', max_length=200)
+
+class JobForm(forms.Form):
+    name = forms.CharField(label='Job Name', max_length=200)
+    description = forms.CharField(label='Description', max_length=200)
    
 class DayEntryPersonForm(forms.Form):
     person = forms.ModelChoiceField(Person.objects.all())

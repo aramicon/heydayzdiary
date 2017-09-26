@@ -1,14 +1,33 @@
 {% extends 'heydayzdiary/base.html' %}
 {% block content %}
-	
+	<script>
+	  $( function() {
+		//sleep duration slider
+		$( "#travel_time_slider" ).slider({
+		  range: "min",
+		  value: 0,
+		  min: 0,
+		  max: 240,
+		  slide: function( event, ui ) {
+			$( "#id_travel_time" ).val( ui.value/10 );
+		  }
+		});
+		if($("#id_travel_time")){
+			$( "#id_travel_time" ).val( $( "#travel_time_slider" ).slider( "value" )/10 );
+		}
+		});
+	</script>
+		
 	<h1>Add a new Location to a Day: {{ day_entry_location.id }}</h1>
 	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 	<form action="" method="post">
 		{% csrf_token %}
-		{{ form }} 
+		{{ form.as_p }}
+		<div id="travel_time_slider"></div>		
 		<input type=hidden name="day_entry_id" value="{{ d_id }}">
 		<input type="submit" value="Submit" />
 	 </form>
+	
 	 <p>
 	 <a href="{% url 'heydayzdiary:location-add' %}">Add a NEW Location</a>
 	</p>

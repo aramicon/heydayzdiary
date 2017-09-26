@@ -21,7 +21,17 @@
 	</script>
 
 
-	<h1>Edit Exercise: {{ exercise.description }}</h1>
+	<h1>Edit Exercise: {{ exercise.exercise_type.exercise_type_description }} / {{ exercise.description }}</h1>
+	 <p>
+		All Exercise on this Day
+		<ul>
+		{% for exerciseC in exercise.day_entry.exercise_set.all %}
+			<li> <a href="{% url 'heydayzdiary:exercise-update' day_entry_id=exercise.day_entry_id pk=exerciseC.id %}">{{ exercise.exercise_type.exercise_type_description }} / {{exerciseC.description}}</a>
+			</li>	
+		{% endfor %}
+		</ul>			
+	</p>
+	
 	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 	<form action="{% url 'heydayzdiary:exercise-update' day_entry_id=exercise.day_entry_id pk=exercise.id %}" method="post">
 		{% csrf_token %}
@@ -35,6 +45,9 @@
 		<div id="intensity_slider"></div>
 		<input type="submit" value="Submit" />
 	 </form>
+	 <p>
+		<a href="{% url 'heydayzdiary:exercise-add' day_entry_id=exercise.day_entry_id %}">Add another Exercise period to this Day</a><br />
+	</p>
 	  <p>
 	 <a href="{% url 'heydayzdiary:exercise-delete' day_entry_id=exercise.day_entry_id pk=exercise.id %}">Delete this Exercise</a>
 	 </p>

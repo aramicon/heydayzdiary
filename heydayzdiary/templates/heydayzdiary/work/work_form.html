@@ -5,7 +5,16 @@
 	<script src ="{% static 'heydayzdiary/slider_time_selector.js' %}"></script>
 
 
-	<h1>Edit Work: {{ work.description }}</h1>
+	<h1>Edit Work: >{{work.job.name}} / {{ work.description }}</h1>
+	 <p>
+		All Work on this Day
+		<ul>
+		{% for workC in work.day_entry.work_set.all %}
+			<li> <a href="{% url 'heydayzdiary:work-update' day_entry_id=work.day_entry_id pk=workC.id %}">{{workC.job.name}} / {{workC.description}}</a>
+			</li>	
+		{% endfor %}
+		</ul>			
+	</p>
 	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 	<form action="{% url 'heydayzdiary:work-update' day_entry_id=work.day_entry_id pk=work.id %}" method="post">
 		{% csrf_token %}
@@ -19,10 +28,17 @@
 		<input type="submit" value="Submit" />
 	 </form>
 	  <p>
+		<a href="{% url 'heydayzdiary:work-add' day_entry_id=work.day_entry_id %}">Add another Work entry to this Day</a><br />
+	</p>
+	  <p>
 	 <a href="{% url 'heydayzdiary:work-delete' day_entry_id=work.day_entry_id pk=work.id %}">Delete this Work</a>
 	 </p>
 	 <p>
 	 <a href="{% url 'heydayzdiary:detail-update' work.day_entry_id %}">Back to DAY</a>
 	 </p>
+	  <p>
+		<a href="{% url 'heydayzdiary:job-add' %}">Add a NEW Job</a>
+		<a href="{% url 'heydayzdiary:job-list' %}">View/Manage Jobs</a>
+	</p>
 	 
 {% endblock %}

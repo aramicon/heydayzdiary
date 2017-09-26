@@ -6,7 +6,19 @@
 	<script src ="{% static 'heydayzdiary/slider_time_selector.js' %}"></script>
 
 
-	<h1>Edit Study: {{ study.description }}</h1>
+	<h1>Edit Study: {{ study.study_subject.name }} / {{ study.description }} DAY {{ day_entry_location.day_entry.day_date|date:"Y-m-d" }}
+		{{ day_entry_location.day_entry.day_date|date:"D" }}</h1>
+		
+	 <p>
+		All Study on this Day
+		<ul>
+		{% for studyC in study.day_entry.study_set.all %}
+			<li> <a href="{% url 'heydayzdiary:study-update' day_entry_id=study.day_entry_id pk=studyC.id %}">{{ study.study_subject.name }} / {{studyC.description}}</a>
+			</li>	
+		{% endfor %}
+		</ul>			
+	</p>
+	
 	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 	<form action="{% url 'heydayzdiary:study-update' day_entry_id=study.day_entry_id pk=study.id %}" method="post">
 		{% csrf_token %}
@@ -19,6 +31,9 @@
 		{{ form.as_p }}
 		<input type="submit" value="Submit" />
 	 </form>
+	  <p>
+		<a href="{% url 'heydayzdiary:study-add' day_entry_id=study.day_entry_id %}">Add another Study period to this Day</a><br />
+	</p>
 	  <p>
 	 <a href="{% url 'heydayzdiary:study-delete' day_entry_id=study.day_entry_id pk=study.id %}">Delete this Study</a>
 	 </p>

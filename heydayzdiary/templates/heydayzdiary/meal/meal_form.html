@@ -47,7 +47,19 @@
 	  } );
 	  </script>
 
-	<h1>Edit Meal: {{ meal.description }}</h1>
+	<h1>Edit Meal: {{meal.meal_type.meal_type_description}} : {{ meal.description }}, Day {{ meal.day_entry.day_date|date:"Y-m-d" }}
+		{{ meal.day_entry.day_date|date:"D" }}</h1>
+	
+	<p>
+		All Meals on this Day
+		<ul>
+		{% for mealC in meal.day_entry.meal_set.all %}
+			<li> <a href="{% url 'heydayzdiary:meal-update' day_entry_id=meal.day_entry_id pk=mealC.id %}">{{mealC.meal_type.meal_type_description}} : {{mealC.description}} ({{ mealC.meal_time|date:"H:i" }})</a>
+			</li>	
+		{% endfor %}
+		</ul>			
+	</p>
+	
 	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 	<form action="{% url 'heydayzdiary:meal-update' day_entry_id=meal.day_entry_id pk=meal.id %}" method="post">
 		{% csrf_token %}
@@ -55,8 +67,11 @@
 		{{ form.as_p }}
 		<input type="submit" value="Submit" />
 	 </form>
+	 <p>
+		<a href="{% url 'heydayzdiary:meal-add' day_entry_id=meal.day_entry_id %}">Add another Meal to this Day</a><br />
+	</p>
 	  <p>
-	 <a href="{% url 'heydayzdiary:meal-delete' day_entry_id=meal.day_entry_id pk=meal.id %}">Delete this Meal</a>
+	 <a href="{% url 'heydayzdiary:meal-delete' day_entry_id=meal.day_entry_id pk=meal.id %}">Delete this Meal {{mealC.description}} from this Day</a>
 	 </p>
 	 <p>
 	 <a href="{% url 'heydayzdiary:detail-update' meal.day_entry_id %}">Back to DAY</a>

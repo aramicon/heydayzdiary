@@ -3,7 +3,21 @@
 	{% load static %}
 	<script src ="{% static 'heydayzdiary/slider_time_selector.js' %}"></script>
 
-	<h1>{{ day_entry_person.id }}</h1>
+	<h1>Person {{ day_entry_person.person.name }} , DAY: 
+		{{ day_entry_person.day_entry.day_date|date:"Y-m-d" }}
+		{{ day_entry_person.day_entry.day_date|date:"D" }}
+	 </h1>
+	 
+	<p>
+		All Persons on this Day
+		<ul>
+		{% for day_entry_personC in day_entry_person.day_entry.day_entry_person_set.all %}
+			<li> <a href="{% url 'heydayzdiary:day_entry_person-update' day_entry_id=day_entry_person.day_entry_id pk=day_entry_personC.id %}">{{day_entry_personC.person.name}}</a>
+			</li>	
+		{% endfor %}
+		</ul>			
+	</p>
+	
 	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 	<form action="{% url 'heydayzdiary:day_entry_person-update' day_entry_id=day_entry_person.day_entry_id pk=day_entry_person.id %}" method="post">
 		{% csrf_token %}
@@ -16,15 +30,19 @@
 		{{ form.as_p }}
 		<input type="submit" value="Submit" />
 	 </form>
-
-	 <p>
-	 <a href="{% url 'heydayzdiary:person-add' %}">Add a NEW Person</a>
-	</p>
+	
+	<p>
+	<a href="{% url 'heydayzdiary:day_entry_person-add' day_entry_id=day_entry_person.day_entry_id %}">Add another Person to this Day</a><br />
+	</p>	 
 	  <p>
-	 <a href="{% url 'heydayzdiary:day_entry_person-delete' day_entry_id=day_entry_person.day_entry_id pk=day_entry_person.id %}">Delete this Person from the Day</a>
+	 <a href="{% url 'heydayzdiary:day_entry_person-delete' day_entry_id=day_entry_person.day_entry_id pk=day_entry_person.id %}">Delete this Person, {{ day_entry_person.person.name }},  from this Day</a>
 	 </p>
 	 <p>
 	 <a href="{% url 'heydayzdiary:detail-update' day_entry_person.day_entry_id %}">Back to DAY</a>
 	 </p>
+	 <p>
+	 <a href="{% url 'heydayzdiary:person-add' %}">Add a NEW Person</a>
+	 <a href="{% url 'heydayzdiary:person-list' %}">View/Manage Persons</a>
+	</p>
 	 
 {% endblock %}	

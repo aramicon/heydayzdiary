@@ -8,7 +8,7 @@ app_name='heydayzdiary'
 
 urlpatterns = [
     #home page
-	url(r'^home/$',views.HomeView.as_view(),name='home'),
+    url(r'^home/$',views.HomeView.as_view(),name='home'),
     # ex: /heydayzdiary/
     url(r'^days/$',views.DaysView.as_view(),name='days'),
     #login/logout/signup
@@ -30,6 +30,11 @@ urlpatterns = [
     url(r'^(?P<day_entry_id>[0-9]+)/work/(?P<pk>[0-9]+)$', views.WorkUpdate.as_view(), name='work-update'),
     url(r'^(?P<day_entry_id>[0-9]+)/work/add/$', views.WorkCreate.as_view(), name='work-add'),
     url(r'^(?P<day_entry_id>[0-9]+)/work/(?P<pk>[0-9]+)/delete/$', views.WorkDelete.as_view(), name='work-delete'),
+    #job
+    url(r'^job/$', views.JobView.as_view(), name='job-list'),
+    url(r'^job/add/$', views.JobCreate.as_view(), name='job-add'),
+    url(r'^job/(?P<pk>[0-9]+)/$', views.JobUpdate.as_view(), name='job-update'),
+    url(r'^job/(?P<pk>[0-9]+)/delete$', views.JobDelete.as_view(), name='job-delete'),
     #meal
     url(r'^(?P<day_entry_id>[0-9]+)/meal/(?P<pk>[0-9]+)$', views.MealUpdate.as_view(), name='meal-update'),
     url(r'^(?P<day_entry_id>[0-9]+)/meal/add/$', views.MealCreate.as_view(), name='meal-add'),
@@ -51,7 +56,7 @@ urlpatterns = [
     url(r'^(?P<day_entry_id>[0-9]+)/day_entry_location/(?P<pk>[0-9]+)$', views.DayEntryLocationUpdate.as_view(), name='day_entry_location-update'),
     url(r'^(?P<day_entry_id>[0-9]+)/day_entry_location/(?P<pk>[0-9]+)/delete$', views.DayEntryLocationDelete.as_view(), name='day_entry_location-delete'),
     url(r'^(?P<day_entry_id>[0-9]+)/day_entry_location/add/$', views.DayEntryLocationCreate.as_view(), name='day_entry_location-add'),
-    url(r'^location/$', views.LocationView.as_view(), name='location'),
+    url(r'^location/$', views.LocationView.as_view(), name='location-list'),
     url(r'^location/add/$', views.LocationCreate.as_view(), name='location-add'),
     url(r'^location/(?P<pk>[0-9]+)/$', views.LocationUpdate.as_view(), name='location-update'),
     url(r'^location/(?P<pk>[0-9]+)/delete$', views.LocationDelete.as_view(), name='location-delete'),

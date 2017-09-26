@@ -1,0 +1,24 @@
+{% extends 'heydayzdiary/base.html' %}
+{% block content %}
+	<script>
+		$(document).ready(function() {
+			$('#id_start_date').datepicker({ dateFormat: 'yy-mm-dd' });
+			$('#id_end_date').datepicker({ dateFormat: 'yy-mm-dd' });
+		});
+	</script>
+	
+	<h1>Add a new Job</h1>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	<form action="" method="post">
+		{% csrf_token %}
+		{{ form.as_p }} 	
+		<input type="submit" value="Submit" />
+	 </form>
+	 <p>
+	 <a href="{% url 'heydayzdiary:job-list' %}">View All Jobs</a>
+	</p>
+	<p>
+	 <a href="{% url 'heydayzdiary:days' %}">Back to DAYS List</a>
+	</p>
+
+{% endblock %}

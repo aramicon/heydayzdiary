@@ -43,6 +43,8 @@ class Exercise(models.Model):
     intensity = models.IntegerField(blank=True, null=True)
     distance = models.DecimalField(max_digits=8, decimal_places=2,blank=True, null=True)
     web_tracking_system_url = models.URLField(blank=True)
+    date_updated = models.DateTimeField('Date updated',auto_now=True)
+    date_created = models.DateTimeField('Date Created',auto_now_add=True)
     def __str__(self):
         return self.description
     def get_absolute_url(self):
@@ -62,6 +64,8 @@ class Meal(models.Model):
     meal_time = models.TimeField()
     description = models.TextField(blank=True)
     calories = models.IntegerField(blank=True,null=True)
+    date_updated = models.DateTimeField('Date updated',auto_now=True)
+    date_created = models.DateTimeField('Date Created',auto_now_add=True)
     def __str__(self):
         return self.description
     def get_absolute_url(self):
@@ -81,25 +85,46 @@ class Transaction(models.Model):
     transaction_time = models.TimeField()
     description = models.TextField(blank=True)
     amount = models.DecimalField(blank=True,max_digits=8, decimal_places=2)
+    date_updated = models.DateTimeField('Date updated',auto_now=True)
+    date_created = models.DateTimeField('Date Created',auto_now_add=True)
     def __str__(self):
         return self.description
     def get_absolute_url(self):
         return reverse('heydayzdiary:transaction-update', kwargs={'day_entry_id':self.day_entry_id,'pk': self.pk})
-
+		
+class Job(models.Model):
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
+    date_updated = models.DateTimeField('Date updated',auto_now=True)
+    date_created = models.DateTimeField('Date Created',auto_now_add=True)
+    def __str__(self):
+        return self.name
+    def get_absolute_url(self):
+        return reverse('heydayzdiary:job-update', kwargs={'pk': self.pk})   
+		
 class Work(models.Model):
     day_entry = models.ForeignKey(Day_entry, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    job = models.ForeignKey(Job, on_delete=models.SET_NULL,null=True,blank=True)
     start_time = models.TimeField()
     end_time = models.TimeField()
     description = models.TextField(blank=True) 
+    date_updated = models.DateTimeField('Date updated',auto_now=True)
+    date_created = models.DateTimeField('Date Created',auto_now_add=True)
     def __str__(self):
         return self.description
     def get_absolute_url(self):
-        return reverse('heydayzdiary:work-update', kwargs={'day_entry_id':self.day_entry_id,'pk': self.pk})
+        return reverse('heydayzdiary:work-update', kwargs={'day_entry_id':self.day_entry_id,'pk': self.pk})        
+        
 class Study_Subject(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    date_updated = models.DateTimeField('Date updated',auto_now=True)
+    date_created = models.DateTimeField('Date Created',auto_now_add=True)
     def __str__(self):
         return self.name
     def get_absolute_url(self):
@@ -112,6 +137,8 @@ class Study(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
     description = models.TextField(blank=True) 
+    date_updated = models.DateTimeField('Date updated',auto_now=True)
+    date_created = models.DateTimeField('Date Created',auto_now_add=True)
     def __str__(self):
         return self.description
     def get_absolute_url(self):
@@ -120,15 +147,29 @@ class Study(models.Model):
 class Location(models.Model):
     location_name = models.CharField(max_length=200)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    date_updated = models.DateTimeField('Date updated',auto_now=True)
+    date_created = models.DateTimeField('Date Created',auto_now_add=True)
     def __str__(self):
         return self.location_name
     def get_absolute_url(self):
         return reverse('heydayzdiary:location-update', kwargs={'pk': self.pk})
+
+class Mode_of_travel(models.Model):
+    description = models.CharField(max_length=200)    
+    def __str__(self):
+        return self.description
+    def get_absolute_url(self):
+        return reverse('heydayzdiary:mode_of_travel-update', kwargs={'pk': self.pk})
         
 class Day_entry_Location(models.Model):
-    location = models.ForeignKey(Location, on_delete=models.CASCADE)
     day_entry = models.ForeignKey(Day_entry, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    mode_of_travel = models.ForeignKey(Mode_of_travel, on_delete=models.CASCADE,blank=True,null=True)
+    travel_time = models.DecimalField(blank=True,null=True,max_digits=4, decimal_places=2)
+    travel_distance = models.DecimalField(blank=True,null=True,max_digits=4, decimal_places=2)   
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    date_updated = models.DateTimeField('Date updated',auto_now=True)
+    date_created = models.DateTimeField('Date Created',auto_now_add=True)
     def get_absolute_url(self):
         return reverse('heydayzdiary:day_entry_location-update', kwargs={'day_entry_id':self.day_entry_id,'pk': self.pk})
     def __str__(self):

@@ -1,22 +1,22 @@
 {% extends 'heydayzdiary/base.html' %}
 {% block content %}
 	
-	<h1>Locations</h1>
+	<h1>Jobs</h1>
 	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 	{% if object_list  %}
 		<ul>
-		{% for location in object_list  %}
+		{% for job in object_list  %}
 		<p>
-			<a href="{% url 'heydayzdiary:location-update' location.id %}"> {{ location.id }}:  <strong>{{ location.location_name }}</strong> </li></a>
+			<a href="{% url 'heydayzdiary:job-update' job.id %}"> {{ job.id }}:  <strong>{{ job.name }}</strong> </li></a>
 		</p>
 		{% endfor %}
 			
 		</ul>
 	{% else %}
-		<p>No Locations exist.</p>
+		<p>No Jobs exist.</p>
 	{% endif %}
 	 <p>
-	 <a href="{% url 'heydayzdiary:location-add' %}">Add a NEW Location</a>
+	 <a href="{% url 'heydayzdiary:job-add' %}">Add a NEW job</a>
 	</p>
 	<p>
 	 <a href="{% url 'heydayzdiary:days' %}">Back to DAYS List</a>

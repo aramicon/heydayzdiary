@@ -1,24 +1,55 @@
 {% extends 'heydayzdiary/base.html' %}
 {% block content %}
-	
-	<h1>{{ day_entry_location.id }}</h1>
+	<script>
+	  $( function() {
+		//sleep duration slider
+		$( "#travel_time_slider" ).slider({
+		  range: "min",
+		  value: {{ day_entry_location.travel_time }}*10,
+		  min: 0,
+		  max: 240,
+		  slide: function( event, ui ) {
+			$( "#id_travel_time" ).val( ui.value/10 );
+		  }
+		});
+		if($("#id_travel_time")){
+			$( "#id_travel_time" ).val( $( "#travel_time_slider" ).slider( "value" )/10 );
+		}
+		});
+	</script>
+	<h1>Location {{ day_entry_location.location.location_name }} , DAY: 
+		{{ day_entry_location.day_entry.day_date|date:"Y-m-d" }}
+		{{ day_entry_location.day_entry.day_date|date:"D" }}
+	 </h1>
+	 <p>
+		All Locations on this Day
+		<ul>
+		{% for day_entry_locationC in day_entry_location.day_entry.day_entry_location_set.all %}
+			<li> <a href="{% url 'heydayzdiary:day_entry_location-update' day_entry_id=day_entry_location.day_entry_id pk=day_entry_locationC.id %}">{{day_entry_locationC.location.location_name}}</a>
+			</li>	
+		{% endfor %}
+		</ul>			
+	</p>
 	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 	<form action="{% url 'heydayzdiary:day_entry_location-update' day_entry_id=day_entry_location.day_entry_id pk=day_entry_location.id %}" method="post">
 		{% csrf_token %}
-		{{ form }}
+		{{ form.as_p }}
+		<div id="travel_time_slider"></div>	
 		<input type="submit" value="Submit" />
 	 </form>
-
 	 <p>
-	 <a href="{% url 'heydayzdiary:location-add' %}">Add a NEW Location</a>
+		<a href="{% url 'heydayzdiary:day_entry_location-add' day_entry_id=day_entry_location.day_entry_id %}">Add another Location to this Day</a><br />
 	</p>
-
 	  <p>
-	 <a href="{% url 'heydayzdiary:day_entry_location-delete' day_entry_id=day_entry_location.day_entry_id pk=day_entry_location.id %}">Delete Location from this Day</a>
+		<a href="{% url 'heydayzdiary:day_entry_location-delete' day_entry_id=day_entry_location.day_entry_id pk=day_entry_location.id %}">Delete Location ( {{ day_entry_location.location.location_name }} ) from this Day</a>
 	 </p>
 
 	 <p>
-	 <a href="{% url 'heydayzdiary:detail-update' day_entry_location.day_entry_id %}">Back to DAY</a>
+		<a href="{% url 'heydayzdiary:detail-update' day_entry_location.day_entry_id %}">Back to DAY</a>
 	 </p>
+	  <p>
+		<a href="{% url 'heydayzdiary:location-add' %}">Add a NEW Location</a>
+		<a href="{% url 'heydayzdiary:location-list' %}">View/Manage Locations</a>
+	</p>
 	 
 {% endblock %}

@@ -14,9 +14,9 @@ import math
 import sys
 
 
-from .models import Day_entry, Exercise, Work, Study, Day_entry_Location, Location, Day_entry_Person, Person, Day_entry_Project, Project, Meal, Transaction, Study_Subject
+from .models import Day_entry, Exercise, Work, Study, Day_entry_Location, Location, Day_entry_Person, Person, Day_entry_Project, Project, Meal, Transaction, Study_Subject, Job
 
-from heydayzdiary.forms import UserCreationForm, DayEntryForm, ExerciseForm, WorkForm,DayEntryLocationForm, LocationForm, PersonForm, DayEntryPersonForm, ProjectForm, DayEntryProjectForm, MealForm, TransactionForm, StudySubjectForm, StudyForm
+from heydayzdiary.forms import UserCreationForm, DayEntryForm, ExerciseForm, WorkForm,DayEntryLocationForm, LocationForm, PersonForm, DayEntryPersonForm, ProjectForm, DayEntryProjectForm, MealForm, TransactionForm, StudySubjectForm, StudyForm, JobForm
 
 def signup(request):
     if request.method == 'POST':
@@ -227,7 +227,7 @@ class WorkUpdate(LoginRequiredMixin,UpdateView):
     model = Work
     form = WorkForm
     template_name = 'heydayzdiary/work/work_form.html'
-    fields=['start_time','end_time','description']
+    fields=['job','start_time','end_time','description']
     def get_queryset(self):
         base_qs = super(WorkUpdate, self).get_queryset()
         return base_qs.filter(user=self.request.user)
@@ -238,7 +238,7 @@ class WorkCreate(LoginRequiredMixin,CreateView):
     model = Work
     form = WorkForm
     template_name = 'heydayzdiary/work/work_form_add.html'
-    fields=['start_time','end_time','description']
+    fields=['job','start_time','end_time','description']
     
     def form_valid(self, form):
         work = form.save(commit=False)
@@ -313,7 +313,49 @@ class StudyDelete(LoginRequiredMixin,DeleteView):
     def get_queryset(self):
         base_qs = super(StudyDelete, self).get_queryset()
         return base_qs.filter(user=self.request.user)
+		
+class JobView(LoginRequiredMixin,generic.ListView):
+    login_url = 'heydayzdiary:login'
+    redirect_field_name = 'heydayzdiary:days'
+    model = Job
+    template_name = 'heydayzdiary/work/job_list.html'
+    def get_queryset(self):
+        """Return jobs for the logged-in user."""
+        return Job.objects.filter(user=self.request.user).order_by('name')  
 
+class JobCreate(LoginRequiredMixin,CreateView):
+    login_url = 'heydayzdiary:login'
+    redirect_field_name = 'heydayzdiary:days'
+    model = Job
+    form = JobForm
+    fields=['name','description','start_date','end_date']
+    template_name = 'heydayzdiary/work/job_add_form.html'
+    def form_valid(self, form):
+        job = form.save(commit=False)        
+        job.user = self.request.user        
+        return super(JobCreate, self).form_valid(form)
+
+class JobUpdate(LoginRequiredMixin,UpdateView):
+    login_url = 'heydayzdiary:login'
+    redirect_field_name = 'heydayzdiary:days'
+    model = Job
+    form = JobForm
+    template_name = 'heydayzdiary/work/job_form.html'
+    fields=['name','description','start_date','end_date']
+    def get_queryset(self):
+        base_qs = super(JobUpdate, self).get_queryset()
+        return base_qs.filter(user=self.request.user)
+
+class JobDelete(LoginRequiredMixin,DeleteView):
+    login_url = 'heydayzdiary:login'
+    redirect_field_name = 'heydayzdiary:days'
+    model = Job
+    template_name = 'heydayzdiary/work/job_confirm_delete.html'
+    success_url = reverse_lazy('heydayzdiary:job-list')
+    def get_queryset(self):
+        base_qs = super(JobDelete, self).get_queryset()
+        return base_qs.filter(user=self.request.user)
+		
 class StudySubjectView(LoginRequiredMixin,generic.ListView):
     login_url = 'heydayzdiary:login'
     redirect_field_name = 'heydayzdiary:days'
@@ -362,7 +404,7 @@ class DayEntryLocationUpdate(LoginRequiredMixin,UpdateView):
     model = Day_entry_Location
     form = DayEntryLocationForm
     template_name = 'heydayzdiary/location/day_entry_location_form.html'
-    fields=['location']
+    fields=['location','mode_of_travel','travel_distance','travel_time']
     def get_queryset(self):
         base_qs = super(DayEntryLocationUpdate, self).get_queryset()
         return base_qs.filter(user=self.request.user)
@@ -390,7 +432,7 @@ class DayEntryLocationCreate(LoginRequiredMixin,CreateView):
     model = Day_entry_Location
     form = DayEntryLocationForm
     all_locations = Location.objects.all()
-    fields=['location']
+    fields=['location','mode_of_travel','travel_distance','travel_time']
     def form_valid(self, form):
         day_entry_location = form.save(commit=False)
         day_entry_id = form.data['day_entry_id']
@@ -473,8 +515,7 @@ class DayEntryPersonDelete(LoginRequiredMixin,DeleteView):
         return reverse_lazy('heydayzdiary:detail-update',kwargs={'pk': day_entry.id})
     def get_queryset(self):
         base_qs = super(DayEntryPersonDelete, self).get_queryset()
-        return base_qs.filter(user=self.request.user)
-   
+        return base_qs.filter(user=self.request.user)   
 
 class DayEntryPersonCreate(LoginRequiredMixin,CreateView):
     login_url = 'heydayzdiary:login'
