@@ -8,7 +8,7 @@
 		All Project/Hobby work on this Day
 		<ul>
 		{% for day_entry_projectC in day_entry_project.day_entry.day_entry_project_set.all %}
-			<li> <a href="{% url 'heydayzdiary:day_entry_project-update' day_entry_id=day_entry_project.day_entry_id pk=day_entry_projectC.id %}">{{ day_entry_project.project.name }} / {{ day_entry_project.description }}</a>
+			<li> <a href="{% url 'heydayzdiary:day_entry_project-update' day_entry_id=day_entry_project.day_entry_id pk=day_entry_projectC.id %}">{{ day_entry_projectC.project.name }} <strong>{{ day_entry_projectC.start_time|date:"H:i" }}</strong>-<strong>{{ day_entry_projectC.end_time|date:"H:i" }}</strong> {{ day_entry_projectC.description|truncatechars:50 }}</a>
 			</li>	
 		{% endfor %}
 		</ul>			
@@ -36,7 +36,7 @@
 	 <a href="{% url 'heydayzdiary:day_entry_project-delete' day_entry_id=day_entry_project.day_entry_id pk=day_entry_project.id %}">Delete this Project from the Day</a>
 	 </p>
 	 <p>
-	 <a href="{% url 'heydayzdiary:detail-update' day_entry_project.day_entry_id %}">Back to DAY</a>
+	 <a href="{% url 'heydayzdiary:day-update' day_entry_project.day_entry_id %}">Back to DAY</a>
 	 </p>
 	 
 {% endblock %}

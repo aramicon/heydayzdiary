@@ -1,6 +1,5 @@
 {% extends 'heydayzdiary/base.html' %}
 {% block content %}
-
 	<script>
 	  $( function() {
 		//sleep duration slider
@@ -23,8 +22,6 @@
 					if (minutes1 == 0) minutes1 = '00';
 
 					$('#id_transaction_time').val(hours1 + ':' + minutes1);
-					
-		   
 		  }
 		});
 		
@@ -39,15 +36,21 @@
 			var slider_time_minutes = slider_time.substring(0, slider_time.indexOf(":"));
 			slider_time_total_minutes = (parseInt(slider_time_hours)*60) + parseInt(slider_time_minutes);
 			
-		}
-		
-		$( "#transaction_time_slider" ).slider('value',slider_time_total_minutes);
-		
-		
+		}		
+		$( "#transaction_time_slider" ).slider('value',slider_time_total_minutes);		
 	  } );
-	  </script>
+	  </script>	
 
-	<h1>Edit Transaction: {{ transaction.description }}</h1>
+	<h1>Edit Transaction: {{ transaction.transaction_type.description }} / {{ transaction.description }}</h1>
+	<p>
+		All transactions on this Day
+		<ul>
+		{% for transactionC in transaction.day_entry.transaction_set.all %}
+			<li> <a href="{% url 'heydayzdiary:transaction-update' day_entry_id=transaction.day_entry_id pk=transactionC.id %}">{{ transactionC.transaction_type.description }} / {{ transactionC.description }} ( {{ transactionC.amount}} )</a>
+			</li>	
+		{% endfor %}
+		</ul>			
+	</p>
 	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 	<form action="{% url 'heydayzdiary:transaction-update' day_entry_id=transaction.day_entry_id pk=transaction.id %}" method="post">
 		{% csrf_token %}
@@ -55,11 +58,14 @@
 		{{ form.as_p }}
 		<input type="submit" value="Submit" />
 	 </form>
+	 <p>
+		<a href="{% url 'heydayzdiary:transaction-add' day_entry_id=transaction.day_entry_id %}">Add another transaction to this Day</a><br />
+	</p>
 	  <p>
 	 <a href="{% url 'heydayzdiary:transaction-delete' day_entry_id=transaction.day_entry_id pk=transaction.id %}">Delete this Transaction</a>
 	 </p>
 	 <p>
-	 <a href="{% url 'heydayzdiary:detail-update' transaction.day_entry_id %}">Back to DAY</a>
+	 <a href="{% url 'heydayzdiary:day-update' transaction.day_entry_id %}">Back to DAY</a>
 	 </p>
 	 
 {% endblock %}

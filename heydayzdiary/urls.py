@@ -9,19 +9,28 @@ app_name='heydayzdiary'
 urlpatterns = [
     #home page
     url(r'^home/$',views.HomeView.as_view(),name='home'),
-    # ex: /heydayzdiary/
-    url(r'^days/$',views.DaysView.as_view(),name='days'),
+       
     #login/logout/signup
     url(r'^login/$', auth_views.login, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': 'heydayzdiary:home'}, name='logout'),
     url(r'^signup/$', views.signup, name='signup'),
     url(r'^admin/', admin.site.urls),
-    #rl(r'^(?P<pk>[0-9]+)/$', views.DetailView.as_view(),name='detail'),
-    url(r'^add/$', views.DetailCreate.as_view(), name='detail-add'),
-    url(r'^(?P<pk>[0-9]+)/$', views.DetailUpdate.as_view(), name='detail-update'),
-    url(r'^(?P<pk>[0-9]+)/delete/$', views.DetailDelete.as_view(), name='detail-delete'),
+    #days
+	url(r'^days/$',views.DaysView.as_view(),name='days'),
+    url(r'^add/$', views.DayCreate.as_view(), name='day-add'),
+    url(r'^(?P<pk>[0-9]+)/$', views.DayUpdate.as_view(), name='day-update'),
+    url(r'^(?P<pk>[0-9]+)/delete/$', views.DayDelete.as_view(), name='day-delete'),
+	#totals
+	url(r'^totals/$',views.TotalsView.as_view(),name='totals'),	
     #day-read-view
-      url(r'^(?P<pk>[0-9]+)/read$', views.DetailReadFormat.as_view(), name='read-format'),
+    url(r'^(?P<pk>[0-9]+)/read$', views.DayReadFormat.as_view(), name='read-format'),
+    # template days
+    url(r'^(?P<day_entry_id>[0-9]+)/assign-day-template/$', views.AssignTemplateDay.as_view(), name='assign-template-day'),
+    url(r'^use-template-day/$', views.UseTemplateDay, name='use-template-day'),
+    url(r'^day-template-list/$', views.TemplateDayView.as_view(), name='template-day-list'),
+    url(r'^day-template/add/$', views.TemplateDayCreate.as_view(), name='template-day-add'),
+    url(r'^day-template/(?P<pk>[0-9]+)/$', views.TemplateDayUpdate.as_view(), name='template-day-update'),
+    url(r'^day-template/(?P<pk>[0-9]+)/delete/$', views.TemplateDayDelete.as_view(), name='template-day-delete'),
     #exercise
     url(r'^(?P<day_entry_id>[0-9]+)/exercise/(?P<pk>[0-9]+)$', views.ExerciseUpdate.as_view(), name='exercise-update'),
     url(r'^(?P<day_entry_id>[0-9]+)/exercise/add/$', views.ExerciseCreate.as_view(), name='exercise-add'),

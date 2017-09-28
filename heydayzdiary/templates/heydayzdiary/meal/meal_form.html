@@ -74,7 +74,7 @@
 	 <a href="{% url 'heydayzdiary:meal-delete' day_entry_id=meal.day_entry_id pk=meal.id %}">Delete this Meal {{mealC.description}} from this Day</a>
 	 </p>
 	 <p>
-	 <a href="{% url 'heydayzdiary:detail-update' meal.day_entry_id %}">Back to DAY</a>
+	 <a href="{% url 'heydayzdiary:day-update' meal.day_entry_id %}">Back to DAY</a>
 	 </p>
 
 {% endblock %}

@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.base import TemplateView
 from django.views.generic import DetailView
 from django.utils import timezone
 from django.urls import reverse_lazy
@@ -12,9 +13,10 @@ from django.contrib.auth import login, authenticate
 #from django.contrib.auth.forms import UserCreationForm
 import math
 import sys
+import datetime
 
 
-from .models import Day_entry, Exercise, Work, Study, Day_entry_Location, Location, Day_entry_Person, Person, Day_entry_Project, Project, Meal, Transaction, Study_Subject, Job
+from .models import Day_entry, Exercise, Work, Study, Day_entry_Location, Location, Day_entry_Person, Person, Day_entry_Project, Project, Meal, Transaction, Study_Subject, Job,Template_Day
 
 from heydayzdiary.forms import UserCreationForm, DayEntryForm, ExerciseForm, WorkForm,DayEntryLocationForm, LocationForm, PersonForm, DayEntryPersonForm, ProjectForm, DayEntryProjectForm, MealForm, TransactionForm, StudySubjectForm, StudyForm, JobForm
 
@@ -29,8 +31,36 @@ def signup(request):
             login(request, user)
             return redirect('heydayzdiary:home')
     else:
-        form = UserCreationForm()
-    return render(request, 'heydayzdiary/signup.html', {'form': form})
+        return redirect('heydayzdiary:days')
+    
+
+def UseTemplateDay(request):
+    if request.method == 'POST':
+        template_day_selected = request.POST.get('template_day_selected')
+        #get this template day
+        day_template = get_object_or_404(Template_Day, id=template_day_selected)
+        day_entry = day_template.day_entry
+        #need to create a new entry
+       
+        day_entry.day_main_text = ""
+        day_entry.day_headline = "DAY " + day_template.name
+        day_entry.day_date = datetime.date.today()
+        old_day_entry_location = day_entry.day_entry_location_set.all()
+        old_day_entry_person_set = day_entry.day_entry_person_set.all()
+        old_meal_set = day_entry.meal_set.all()
+        old_work_set = day_entry.work_set.all()
+        
+        day_entry.pk = None #this is what causes a NEW day to be created
+        day_entry.save()
+        #now add the old locations/etc to the new day        
+        day_entry.day_entry_location_set.set(old_day_entry_location)
+        day_entry.day_entry_person_set.set(old_day_entry_person_set)
+        day_entry.meal_set.set(old_meal_set)
+        day_entry.work_set.set(old_work_set)
+        
+        return redirect('heydayzdiary:days')
+    else:
+        return redirect('heydayzdiary:days')   
 
 class HomeView(generic.TemplateView):
     template_name = 'heydayzdiary/home.html'
@@ -48,8 +78,24 @@ class DaysView(LoginRequiredMixin,generic.ListView):
     def get_queryset(self):
         """Return day entries for the logged-in user."""
         return Day_entry.objects.filter(day_date__lte=timezone.now(),user=self.request.user).order_by('-day_date')       
-    
-class DetailCreate(LoginRequiredMixin,CreateView):
+    def get_context_data(self, **kwargs):
+        context=super(DaysView,self).get_context_data(**kwargs)
+        context['template_days'] =  Template_Day.objects.exclude(day_entry__isnull=True)
+        #context['template_days'] =  Template_Day.objects.filter(Day_entry > 0)        
+        return context
+        
+class TotalsView(LoginRequiredMixin,TemplateView):
+    login_url = 'heydayzdiary:login'
+    redirect_field_name = 'heydayzdiary:days'
+    template_name = 'heydayzdiary/totals/totals_main_page.html'
+    def get_context_data(self, **kwargs):
+        context=super(TotalsView,self).get_context_data(**kwargs)
+        context['total_days'] =  Day_entry.objects.filter(user=self.request.user).count()
+        #context['template_days'] =  Template_Day.objects.filter(Day_entry > 0)        
+        return context
+
+       
+class DayCreate(LoginRequiredMixin,CreateView):
     login_url = 'heydayzdiary:login'
     redirect_field_name = 'heydayzdiary:days'
     model = Day_entry
@@ -58,9 +104,9 @@ class DetailCreate(LoginRequiredMixin,CreateView):
     def form_valid(self, form):
         day = form.save(commit=False)
         day.user = self.request.user   
-        return super(DetailCreate, self).form_valid(form)    
+        return super(DayCreate, self).form_valid(form)    
     
-class DetailUpdate(LoginRequiredMixin,UpdateView):
+class DayUpdate(LoginRequiredMixin,UpdateView):
     login_url = 'heydayzdiary:login'
     redirect_field_name = 'heydayzdiary:days'
     model = Day_entry
@@ -68,25 +114,28 @@ class DetailUpdate(LoginRequiredMixin,UpdateView):
     template_name = 'heydayzdiary/day/day_entry_form.html'
     fields=['day_headline','day_main_text','day_date','sleep_duration','sleep_quality','sleep_notes','wake_up_time','weather_sun','weather_rain','weather_wind','weather_temperature','weather_notes']
     def get_queryset(self):
-        base_qs = super(DetailUpdate, self).get_queryset()
+        base_qs = super(DayUpdate, self).get_queryset()
         return base_qs.filter(user=self.request.user)    
 
-class DetailReadFormat(LoginRequiredMixin,DetailView):
+class DayReadFormat(LoginRequiredMixin,DetailView):
     login_url = 'heydayzdiary:login'
     redirect_field_name = 'heydayzdiary:days'
     model = Day_entry
     template_name = 'heydayzdiary/day/day_entry_readformat_form.html'
     def get_queryset(self):
-        base_qs = super(DetailReadFormat, self).get_queryset()
+        base_qs = super(DayReadFormat, self).get_queryset()
         return base_qs.filter(user=self.request.user)    
     
-class DetailDelete(LoginRequiredMixin,DeleteView):
+class DayDelete(LoginRequiredMixin,DeleteView):
     login_url = 'heydayzdiary:login'
     redirect_field_name = 'heydayzdiary:days'
     model = Day_entry
     success_url = reverse_lazy('heydayzdiary')
+    template_name = 'heydayzdiary/day/day_entry_confirm_delete.html'
+    def get_success_url(self):
+        return reverse_lazy('heydayzdiary:days')
     def get_queryset(self):
-        base_qs = super(DetailDelete, self).get_queryset()
+        base_qs = super(DayDelete, self).get_queryset()
         return base_qs.filter(user=self.request.user)
     
 class ExerciseUpdate(LoginRequiredMixin,UpdateView):
@@ -128,7 +177,7 @@ class ExerciseDelete(LoginRequiredMixin,DeleteView):
     model = Exercise       
     def get_success_url(self):
         day_entry = self.object.day_entry 
-        return reverse_lazy('heydayzdiary:detail-update',kwargs={'pk': day_entry.id})
+        return reverse_lazy('heydayzdiary:day-update',kwargs={'pk': day_entry.id})
     def get_queryset(self):
         base_qs = super(ExerciseDelete, self).get_queryset()
         return base_qs.filter(user=self.request.user)
@@ -172,7 +221,7 @@ class MealDelete(LoginRequiredMixin,DeleteView):
     model = Meal    
     def get_success_url(self):
         day_entry = self.object.day_entry 
-        return reverse_lazy('heydayzdiary:detail-update',kwargs={'pk': day_entry.id}) 
+        return reverse_lazy('heydayzdiary:day-update',kwargs={'pk': day_entry.id}) 
     def get_queryset(self):
         base_qs = super(MealDelete, self).get_queryset()
         return base_qs.filter(user=self.request.user)        
@@ -216,7 +265,7 @@ class TransactionDelete(LoginRequiredMixin,DeleteView):
     template_name = 'heydayzdiary/transaction/transaction_confirm_delete.html'
     def get_success_url(self):
         day_entry = self.object.day_entry 
-        return reverse_lazy('heydayzdiary:detail-update',kwargs={'pk': day_entry.id})   
+        return reverse_lazy('heydayzdiary:day-update',kwargs={'pk': day_entry.id})   
     def get_queryset(self):
         base_qs = super(TransactionDelete, self).get_queryset()
         return base_qs.filter(user=self.request.user)        
@@ -260,7 +309,7 @@ class WorkDelete(LoginRequiredMixin,DeleteView):
     template_name = 'heydayzdiary/work/work_confirm_delete.html'
     def get_success_url(self):
         day_entry = self.object.day_entry 
-        return reverse_lazy('heydayzdiary:detail-update',kwargs={'pk': day_entry.id})
+        return reverse_lazy('heydayzdiary:day-update',kwargs={'pk': day_entry.id})
     def get_queryset(self):
         base_qs = super(WorkDelete, self).get_queryset()
         return base_qs.filter(user=self.request.user)
@@ -309,11 +358,11 @@ class StudyDelete(LoginRequiredMixin,DeleteView):
     template_name = 'heydayzdiary/study/study_confirm_delete.html'
     def get_success_url(self):
         day_entry = self.object.day_entry 
-        return reverse_lazy('heydayzdiary:detail-update',kwargs={'pk': day_entry.id})
+        return reverse_lazy('heydayzdiary:day-update',kwargs={'pk': day_entry.id})
     def get_queryset(self):
         base_qs = super(StudyDelete, self).get_queryset()
         return base_qs.filter(user=self.request.user)
-		
+        
 class JobView(LoginRequiredMixin,generic.ListView):
     login_url = 'heydayzdiary:login'
     redirect_field_name = 'heydayzdiary:days'
@@ -355,7 +404,7 @@ class JobDelete(LoginRequiredMixin,DeleteView):
     def get_queryset(self):
         base_qs = super(JobDelete, self).get_queryset()
         return base_qs.filter(user=self.request.user)
-		
+        
 class StudySubjectView(LoginRequiredMixin,generic.ListView):
     login_url = 'heydayzdiary:login'
     redirect_field_name = 'heydayzdiary:days'
@@ -420,7 +469,7 @@ class DayEntryLocationDelete(LoginRequiredMixin,DeleteView):
     template_name = 'heydayzdiary/location/day_entry_location_confirm_delete.html'
     def get_success_url(self):
         day_entry = self.object.day_entry 
-        return reverse_lazy('heydayzdiary:detail-update',kwargs={'pk': day_entry.id})
+        return reverse_lazy('heydayzdiary:day-update',kwargs={'pk': day_entry.id})
     def get_queryset(self):
         base_qs = super(DayEntryLocationDelete, self).get_queryset()
         return base_qs.filter(user=self.request.user)
@@ -512,7 +561,7 @@ class DayEntryPersonDelete(LoginRequiredMixin,DeleteView):
     template_name = 'heydayzdiary/person/day_entry_person_confirm_delete.html'
     def get_success_url(self):
         day_entry = self.object.day_entry 
-        return reverse_lazy('heydayzdiary:detail-update',kwargs={'pk': day_entry.id})
+        return reverse_lazy('heydayzdiary:day-update',kwargs={'pk': day_entry.id})
     def get_queryset(self):
         base_qs = super(DayEntryPersonDelete, self).get_queryset()
         return base_qs.filter(user=self.request.user)   
@@ -601,7 +650,7 @@ class DayEntryProjectDelete(LoginRequiredMixin,DeleteView):
     template_name = 'heydayzdiary/project/day_entry_project_confirm_delete.html'
     def get_success_url(self):
         day_entry = self.object.day_entry 
-        return reverse_lazy('heydayzdiary:detail-update',kwargs={'pk': day_entry.id})
+        return reverse_lazy('heydayzdiary:day-update',kwargs={'pk': day_entry.id})
     def get_queryset(self):
         base_qs = super(DayEntryProjectDelete, self).get_queryset()
         return base_qs.filter(user=self.request.user)
@@ -667,4 +716,76 @@ class ProjectDelete(LoginRequiredMixin,DeleteView):
     success_url = reverse_lazy('heydayzdiary:project-list')
     def get_queryset(self):
         base_qs = super(ProjectDelete, self).get_queryset()
+        return base_qs.filter(user=self.request.user)
+    
+class AssignTemplateDay(LoginRequiredMixin,generic.ListView):
+    login_url='heydayzdiary:login'
+    redirect_field_name='heydayzdiary:days'
+    template_name = 'heydayzdiary/template_day/make_template.html'
+    queryset = Template_Day.objects.all()
+    context_object_name = 'template_days'
+    def get_context_data(self, **kwargs):
+        context=super(AssignTemplateDay,self).get_context_data(**kwargs)
+        context['d_id'] = self.kwargs['day_entry_id']
+        return context
+    def post(self, request, *args, **kwargs):
+        #if self.form.is_valid():
+        template_day_selected = request.POST.get('template_day_selected')
+        day_entry_id = request.POST.get('day_entry_id')
+        if (template_day_selected == '0'):
+            #make sure no template day is assigned to this day
+            for template_day in Template_Day.objects.filter(day_entry_id=day_entry_id):
+                template_day.day_entry_id = None
+                template_day.save()
+        else:
+            day_template = get_object_or_404(Template_Day, id=template_day_selected)
+            day_entry = get_object_or_404(Day_entry, id=day_entry_id)
+        
+            day_template.day_entry = day_entry
+        
+            day_template.save()        
+        
+        #return render(request, self.template_name,{day_entry_id:day_entry_id,template_day_selected:template_day_selected})
+        return redirect('heydayzdiary:assign-template-day', day_entry_id=day_entry_id)
+        
+
+class TemplateDayView(LoginRequiredMixin,generic.ListView):
+    login_url = 'heydayzdiary:login'
+    redirect_field_name = 'heydayzdiary:days'
+    model = Template_Day
+    template_name = 'heydayzdiary/template_day/template_day_list.html'
+    def get_queryset(self):
+        """Return template days for the logged-in user."""
+        return Template_Day.objects.filter(user=self.request.user).order_by('name')  
+
+class TemplateDayCreate(LoginRequiredMixin,CreateView):
+    login_url = 'heydayzdiary:login'
+    redirect_field_name = 'heydayzdiary:days'
+    model = Template_Day    
+    fields=['day_entry','name','description']
+    template_name = 'heydayzdiary/template_day/template_day_add_form.html'
+    def form_valid(self, form):
+        templateDay = form.save(commit=False)        
+        templateDay.user = self.request.user        
+        return super(TemplateDayCreate, self).form_valid(form)
+
+class TemplateDayUpdate(LoginRequiredMixin,UpdateView):
+    login_url = 'heydayzdiary:login'
+    redirect_field_name = 'heydayzdiary:days'
+    model = Template_Day
+   
+    template_name = 'heydayzdiary/template_day/template_day_form.html'
+    fields=['day_entry','name','description']
+    def get_queryset(self):
+        base_qs = super(TemplateDayUpdate, self).get_queryset()
+        return base_qs.filter(user=self.request.user)
+
+class TemplateDayDelete(LoginRequiredMixin,DeleteView):
+    login_url = 'heydayzdiary:login'
+    redirect_field_name = 'heydayzdiary:days'
+    model = Template_Day
+    template_name = 'heydayzdiary/template_day/template_day_confirm_delete.html'
+    success_url = reverse_lazy('heydayzdiary:template-day-list')
+    def get_queryset(self):
+        base_qs = super(TemplateDayDelete, self).get_queryset()
         return base_qs.filter(user=self.request.user)

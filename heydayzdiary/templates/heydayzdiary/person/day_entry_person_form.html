@@ -38,7 +38,7 @@
 	 <a href="{% url 'heydayzdiary:day_entry_person-delete' day_entry_id=day_entry_person.day_entry_id pk=day_entry_person.id %}">Delete this Person, {{ day_entry_person.person.name }},  from this Day</a>
 	 </p>
 	 <p>
-	 <a href="{% url 'heydayzdiary:detail-update' day_entry_person.day_entry_id %}">Back to DAY</a>
+	 <a href="{% url 'heydayzdiary:day-update' day_entry_person.day_entry_id %}">Back to DAY</a>
 	 </p>
 	 <p>
 	 <a href="{% url 'heydayzdiary:person-add' %}">Add a NEW Person</a>

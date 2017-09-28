@@ -24,7 +24,7 @@ class Day_entry(models.Model):
     def is_today(self):
         return self.day_date >= timezone.now() - datetime.timedelta(days=1) 
     def get_absolute_url(self):
-        return reverse('heydayzdiary:detail-update', kwargs={'pk': self.pk})
+        return reverse('heydayzdiary:day-update', kwargs={'pk': self.pk})
 
 class Exercise_type(models.Model):
     exercise_type_description = models.CharField(max_length=200)
@@ -91,7 +91,7 @@ class Transaction(models.Model):
         return self.description
     def get_absolute_url(self):
         return reverse('heydayzdiary:transaction-update', kwargs={'day_entry_id':self.day_entry_id,'pk': self.pk})
-		
+        
 class Job(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
@@ -104,7 +104,7 @@ class Job(models.Model):
         return self.name
     def get_absolute_url(self):
         return reverse('heydayzdiary:job-update', kwargs={'pk': self.pk})   
-		
+        
 class Work(models.Model):
     day_entry = models.ForeignKey(Day_entry, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
@@ -237,6 +237,16 @@ class Day_entry_Project(models.Model):
         return reverse('heydayzdiary:day_entry_project-update', kwargs={'day_entry_id':self.day_entry_id,'pk': self.pk})
     def __str__(self):
         return self.project.name
-    
-    
+
+class Template_Day(models.Model):
+    day_entry = models.ForeignKey(Day_entry, on_delete=models.SET_NULL,blank=True,null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    name = models.CharField(max_length=200)
+    description=models.TextField(blank=True)
+    date_created=models.DateTimeField('Date Created',auto_now_add=True)
+    date_updated=models.DateTimeField('Date Updated',auto_now=True)
+    def __str__(self):
+        return self.name
+    def get_absolute_url(self):
+        return reverse('heydayzdiary:template-day-update', kwargs={'pk': self.pk})   
         

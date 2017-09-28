@@ -5,16 +5,35 @@
 {% if latest_day_entries %}
 	<ul>
 	{% for day_entry in latest_day_entries %}
-		<a href="{% url 'heydayzdiary:detail-update' day_entry.id %}"><li class = "frontpagelist" >DAY <strong>{{ day_entry.day_date|date:"Y-m-d" }}</strong> {{ day_entry.day_headline }}</li></a>
+		<a href="{% url 'heydayzdiary:day-update' day_entry.id %}"><li class = "frontpagelist" >DAY <strong>{{ day_entry.day_date|date:"Y-m-d" }}</strong> {{ day_entry.day_headline }}</li></a>
 	{% endfor %}
-		<a href="{% url 'heydayzdiary:detail-add' %}"><li class = "frontpagelist_addnew" ><strong>ADD NEW DAY</strong></li></a>
+		<li class = "frontpagelist_addnew" ><strong><a href="{% url 'heydayzdiary:day-add' %}">ADD DAY</a></strong>
+		 {% if template_days %}
+			<br /><br />Template Days
+			 <form action="{% url 'heydayzdiary:use-template-day' %}" method="post">
+			  {% csrf_token %}
+				<select name="template_day_selected">
+				
+				{% for td in template_days %}
+				  <option value="{{ td.id }}">{{ td.name }}</option>		
+				{% endfor %}
+				</select>
+				<input type=hidden name="day_entry_id" value="{{ d_id }}">
+				<input type="submit" value="Create" />
+			</form>
+			
+		{% endif %}
+		</li>
 	</ul>
 {% else %}
 	<p>No Day Entries are available.
-		<a href="{% url 'heydayzdiary:detail-add' %}"><li class = "frontpagelist_addnew" ><strong>ADD YOUR FIRST DAY</strong></li></a>
+		<a href="{% url 'heydayzdiary:day-add' %}"><li class = "frontpagelist_addnew" ><strong>ADD YOUR FIRST DAY</strong></li></a>
 	</p>
 	
 {% endif %}
 	
 </div>
-<div><a href="{% url 'heydayzdiary:logout' %}">LOGOUT</a></div>
+<div class = bottompanel>
+	<a href="{% url 'heydayzdiary:totals' %}">TOTALS</a>
+	<a href="{% url 'heydayzdiary:logout' %}">LOGOUT</a>
+</div>

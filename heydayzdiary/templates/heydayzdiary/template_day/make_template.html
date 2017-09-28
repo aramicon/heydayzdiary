@@ -1,0 +1,41 @@
+{% extends 'heydayzdiary/base.html' %}
+{% block content %}
+	
+	
+	<h1>Make this Day a template Day for easy use in future</h1>
+	
+	
+		NEED TO ASSIGN THIS DAY TO A SELECTED TEMPLATE HERE
+	
+		 <h2>Current Template Days</h2>
+			{% if template_days  %}
+				<ul>
+				{% for templateDay in template_days  %}
+					<p>
+						<a href="{% url 'heydayzdiary:template-day-update' templateDay.id %}"> {{ templateDay.id }}:  <strong>{{ templateDay.name }}</strong> {{ templateDay.description }} DAY: {{ templateDay.day_entry.id }} {{ templateDay.day_entry.day_date|date:"Y-m-d" }} {{ templateDay.day_entry.day_date|date:"D" }} > {{ templateDay.day_entry.day_headline }} </li></a>
+					</p>
+				{% endfor %}				
+				</ul>
+			{% else %}
+				<p>No Template Days exist.</p>
+			{% endif %}
+		 <form action="" method="post">
+		  {% csrf_token %}
+			<select name="template_day_selected">
+			  <option value="0">--None--</option>
+			{% for td in template_days %}
+			  <option value="{{ td.id }}">{{ td.name }}</option>		
+			{% endfor %}
+			</select>
+			<input type=hidden name="day_entry_id" value="{{ d_id }}">
+			<input type="submit" value="Submit" />
+		</form>
+	 <p>
+		<a href="{% url 'heydayzdiary:template-day-list' %}">View/Manage/Create day templates</a>
+	 </p>
+	  <p>
+	 <a href="{% url 'heydayzdiary:day-update' d_id %}">Back to DAY</a>
+	 </p>
+	
+
+{% endblock %}
