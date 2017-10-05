@@ -15,6 +15,10 @@ import math
 import sys
 import datetime
 
+from django.db import connections
+from django.db.models import Count
+from django.http import JsonResponse
+
 
 from .models import Day_entry, Exercise, Work, Study, Day_entry_Location, Location, Day_entry_Person, Person, Day_entry_Project, Project, Meal, Transaction, Study_Subject, Job,Template_Day
 
@@ -94,6 +98,24 @@ class TotalsView(LoginRequiredMixin,TemplateView):
         #context['template_days'] =  Template_Day.objects.filter(Day_entry > 0)        
         return context
 
+class TotalsSampleD3View(LoginRequiredMixin,TemplateView):
+    login_url = 'heydayzdiary:login'
+    redirect_field_name = 'heydayzdiary:days'
+    template_name = 'heydayzdiary/totals/totals_sample_d3.html'
+    def get_context_data(self, **kwargs):
+        context=super(TotalsSampleD3View,self).get_context_data(**kwargs)
+        #context['total_days'] =  Day_entry.objects.filter(user=self.request.user).count()
+        #context['template_days'] =  Template_Day.objects.filter(Day_entry > 0)        
+        return context
+
+def person_count_by_day(request):
+    data = Day_entry.objects.values('day_date').annotate(num_persons=Count('day_entry_person')).order_by('day_date')
+    return JsonResponse(list(data), safe=False)   
+
+def meal_count_by_day(request):
+    dataM = Day_entry.objects.values('day_date').annotate(num_meals=Count('day_entry_person')).order_by('day_date')
+    return JsonResponse(list(dataM), safe=False) 	
+        
        
 class DayCreate(LoginRequiredMixin,CreateView):
     login_url = 'heydayzdiary:login'

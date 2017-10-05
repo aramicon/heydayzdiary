@@ -37,7 +37,7 @@
 	<h1>Add a New Day Entry</h1>
 	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-	<form action="{% url 'heydayzdiary:detail-add' %}" method = "post">
+	<form action="{% url 'heydayzdiary:day-add' %}" method = "post">
 	{% csrf_token %}
 	<p>
 	<strong>DATE: </strong><br />
