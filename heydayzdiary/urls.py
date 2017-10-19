@@ -24,7 +24,9 @@ urlpatterns = [
 	url(r'^totals/$',views.TotalsView.as_view(),name='totals'),	
 	url(r'^totals/totals_sample_d3/$',views.TotalsSampleD3View.as_view(),name='totals_sample_d3'),	
 	url(r'^totals_sample_d3/person_count_by_day$',views.person_count_by_day,name='person_count_by_day'),	
-	url(r'^totals_sample_d3/meal_count_by_day$',views.person_count_by_day,name='meal_count_by_day'),	
+	url(r'^totals_sample_d3/project_work_by_day$',views.project_work_by_day,name='project_work_by_day'),	
+	url(r'^totals_sample_d3/calorie_count_by_day$',views.calorie_count_by_day,name='calorie_count_by_day'),	
+	url(r'^totals_sample_d3/exercise_time_by_day$',views.exercise_time_by_day,name='exercise_time_by_day'),	
     #day-read-view
     url(r'^(?P<pk>[0-9]+)/read$', views.DayReadFormat.as_view(), name='read-format'),
     # template days

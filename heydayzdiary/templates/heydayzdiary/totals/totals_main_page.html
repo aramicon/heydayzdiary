@@ -37,184 +37,314 @@
 	</style>
 	<script src ="{% static 'heydayzdiary/d3.min.js' %}"></script>
 	<script>
+		$(function(){
+			var margin = {top: 20, right: 20, bottom: 30, left: 50},
+				//width = 960 - margin.left - margin.right,
+				width = 400 - margin.left - margin.right,
+				//height = 500 - margin.top - margin.bottom;
+				height = 160 - margin.top - margin.bottom;
 
-		var margin = {top: 20, right: 20, bottom: 30, left: 50},
-			//width = 960 - margin.left - margin.right,
-			width = 400 - margin.left - margin.right,
-			//height = 500 - margin.top - margin.bottom;
-			height = 160 - margin.top - margin.bottom;
+			//var parseDate = d3.time.format("%Y-%m-%d").parse; // for dates like "2014-01-01"
+			var parseDate = d3.timeParse("%Y-%m-%dT00:00:00Z");  // for dates like "2014-01-01T00:00:00Z"
 
-		//var parseDate = d3.time.format("%Y-%m-%d").parse; // for dates like "2014-01-01"
-		var parseDate = d3.timeParse("%Y-%m-%dT00:00:00Z");  // for dates like "2014-01-01T00:00:00Z"
+			var x = d3.scaleTime()
+				.range([0, width]);
 
-		var x = d3.scaleTime()
-			.range([0, width]);
+			var y = d3.scaleLinear()
+				.range([height, 0]);
 
-		var y = d3.scaleLinear()
-			.range([height, 0]);
-
-		var xAxis = d3.axisBottom(x);
-			
-			
-			var numberOfTicks= 5;
-			
-				  		  
-			<!-- var xAxisGrid = d3.svg.axis().scale(x) -->
-		  <!-- .ticks(numberOfTicks)  -->
-		  <!-- .tickSize(-height, 0) -->
-		  <!-- .tickFormat("") -->
-		  <!-- .orient("top"); -->
-		  
-		  var xAxisGrid = d3.axisTop(x)
-		  .ticks(numberOfTicks) 
-		  .tickSize(-height, 0)
-		  .tickFormat("");
-		  
-		  	var yAxisGrid = d3.axisRight(y)
-		  .ticks(numberOfTicks) 
-		  .tickSize(width, 0)
-		  .tickFormat("");
-		  
-		  
-		  
-		var yAxis = d3.axisLeft(y);
-
-		// gridlines in x axis function
-		function make_x_gridlines() {		
-		   return d3.svg.axis()
-				 .scale(x)
-				 .orient("bottom")
-				 .ticks(5)
-		}
-
-		// gridlines in y axis function
-		function make_y_gridlines() {		
-			return d3.svg.axis()
-				.scale(y)
-				.orient("left")
-				.ticks(5)
-		}
-
-		var line = d3.line()
-			.x(function(d) { return x(d.day_date); })
-			.y(function(d) { return y(d.num_persons); });
-
-		var svg = d3.select("body").append("svg")
-			.attr("width", width + margin.left + margin.right)
-			.attr("height", height + margin.top + margin.bottom)
-		  .append("g")
-			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-		d3.json("{% url "heydayzdiary:person_count_by_day" %}", function(error, data) {
-		  data.forEach(function(d) {
-			d.day_date = parseDate(d.day_date);
-			d.num_persons = +d.num_persons;
-		  });
-
-		  x.domain(d3.extent(data, function(d) { return d.day_date; }));
-		  y.domain(d3.extent(data, function(d) { return d.num_persons; }));
-
-		  svg.append("g")
-				.classed('grid', true)
-				.call(yAxisGrid);
-		  
-			svg.append("g")
-				.classed('grid', true)  
-				.call(xAxisGrid);
+			var xAxis = d3.axisBottom(x);
 				
-		  svg.append("g")
-			  .attr("class", "x axis")
-			  .attr("transform", "translate(0," + height + ")")
-			  .call(xAxis);
-
-		  svg.append("g")
-			  .attr("class", "y axis")
-			  .call(yAxis)
-			.append("text")
-			  .attr("transform", "rotate(-90)")
-			  .attr("y", 6)
-			  .attr("dy", ".71em")
-			  .style("text-anchor", "end")
-			  .text("No. of Persons");
-
-		  svg.append("path")
-			  .datum(data)
-			  .attr("class", "line")
-			  .attr("d", line);
-			  
-			svg.append("text")
-				.attr("x", (width / 2))             
-				//.attr("y", 0 - (margin.top / 2))
-				.attr("y", 0)
-				.attr("text-anchor", "middle")  
-				.style("font-size", "16px") 
-				//.style("text-decoration", "underline")  
-				.text("Persons per Day");			
-		});
-		
-			
-			//*****graph 2, meals per day*********
-			//************************************
-			var lineMeals = d3.line()
-			.x(function(d) { return x(d.day_date); })
-			.y(function(d) { return y(d.num_meals); });
-			
-			var svgMeals = d3.select("body").append("svg")
-			.attr("width", width + margin.left + margin.right)
-			.attr("height", height + margin.top + margin.bottom)
-		  .append("g")
-			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-		d3.json("{% url "heydayzdiary:meal_count_by_day" %}", function(error, dataM) {
-		  dataM.forEach(function(d) {
-			d.day_date = parseDate(d.day_date);
-			d.num_meals = +d.num_meals;
-		  });
-
-		  x.domain(d3.extent(dataM, function(d) { return d.day_date; }));
-		  y.domain(d3.extent(dataM, function(d) { return d.num_meals; }));
-
-		  svgMeals.append("g")
-				.classed('grid', true)
-				.call(yAxisGrid);
-		  
-			svgMeals.append("g")
-				.classed('grid', true)  
-				.call(xAxisGrid);
 				
-		  svgMeals.append("g")
-			  .attr("class", "x axis")
-			  .attr("transform", "translate(0," + height + ")")
-			  .call(xAxis);
-
-		  svgMeals.append("g")
-			  .attr("class", "y axis")
-			  .call(yAxis)
-			.append("text")
-			  .attr("transform", "rotate(-90)")
-			  .attr("y", 6)
-			  .attr("dy", ".71em")
-			  .style("text-anchor", "end")
-			  .text("No. of Meals");
-
-		  svgMeals.append("path")
-			  .datum(dataM)
-			  .attr("class", "line")
-			  .attr("d", lineMeals);
+				var numberOfTicks= 5;
+				
+							  
+				<!-- var xAxisGrid = d3.svg.axis().scale(x) -->
+			  <!-- .ticks(numberOfTicks)  -->
+			  <!-- .tickSize(-height, 0) -->
+			  <!-- .tickFormat("") -->
+			  <!-- .orient("top"); -->
 			  
-			svgMeals.append("text")
-				.attr("x", (width / 2))             
-				//.attr("y", 0 - (margin.top / 2))
-				.attr("y", 0)
-				.attr("text-anchor", "middle")  
-				.style("font-size", "16px") 
-				//.style("text-decoration", "underline")  
-				.text("Meals per Day");
-			});	
-			//end of grpah 2 Meals
+			  var xAxisGrid = d3.axisTop(x)
+			  .ticks(numberOfTicks) 
+			  .tickSize(-height, 0)
+			  .tickFormat("");
+			  
+				var yAxisGrid = d3.axisRight(y)
+			  .ticks(numberOfTicks) 
+			  .tickSize(width, 0)
+			  .tickFormat("");
+			  
+			  
+			  
+			var yAxis = d3.axisLeft(y);
+
+			// gridlines in x axis function
+			function make_x_gridlines() {		
+			   return d3.svg.axis()
+					 .scale(x)
+					 .orient("bottom")
+					 .ticks(5)
+			}
+
+			// gridlines in y axis function
+			function make_y_gridlines() {		
+				return d3.svg.axis()
+					.scale(y)
+					.orient("left")
+					.ticks(5)
+			}
+
+			var line = d3.line()
+				.x(function(d) { return x(d.day_date); })
+				.y(function(d) { return y(d.num_persons); });
+
+			var svg = d3.select("#graph1").append("svg")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+			  .append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			d3.json("{% url "heydayzdiary:person_count_by_day" %}", function(error, data) {
+			  data.forEach(function(d) {
+				d.day_date = parseDate(d.day_date);
+				d.num_persons = +d.num_persons;
+			  });
+
+			  x.domain(d3.extent(data, function(d) { return d.day_date; }));
+			  y.domain(d3.extent(data, function(d) { return d.num_persons; }));
+
+			  svg.append("g")
+					.classed('grid', true)
+					.call(yAxisGrid);
+			  
+				svg.append("g")
+					.classed('grid', true)  
+					.call(xAxisGrid);
+					
+			  svg.append("g")
+				  .attr("class", "x axis")
+				  .attr("transform", "translate(0," + height + ")")
+				  .call(xAxis);
+
+			  svg.append("g")
+				  .attr("class", "y axis")
+				  .call(yAxis)
+				.append("text")
+				  .attr("transform", "rotate(-90)")
+				  .attr("y", 6)
+				  .attr("dy", ".71em")
+				  .style("text-anchor", "end")
+				  .text("No. of Persons");
+
+			  svg.append("path")
+				  .datum(data)
+				  .attr("class", "line")
+				  .attr("d", line);
+				  
+				svg.append("text")
+					.attr("x", (width / 2))             
+					//.attr("y", 0 - (margin.top / 2))
+					.attr("y", 0)
+					.attr("text-anchor", "middle")  
+					.style("font-size", "16px") 
+					//.style("text-decoration", "underline")  
+					.text("Persons per Day");			
+			});
+			
+				
+				//*****graph 2, Project Work*********
+				//************************************
+				var lineProjectWOrk = d3.line()
+				.x(function(d) { return x(d.day_date); })
+				.y(function(d) { return y(d.project_time); });
+				
+			var svgProjectWork = d3.select("#graph2").append("svg")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+			  .append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			d3.json("{% url "heydayzdiary:project_work_by_day" %}", function(error, dataM) {
+			  dataM.forEach(function(d) {
+				d.day_date = parseDate(d.day_date);
+				d.project_time = +d.project_time;
+			  });
+
+			  x.domain(d3.extent(dataM, function(d) { return d.day_date; }));
+			  y.domain(d3.extent(dataM, function(d) { return d.project_time; }));
+
+			  svgProjectWork.append("g")
+					.classed('grid', true)
+					.call(yAxisGrid);
+			  
+				svgProjectWork.append("g")
+					.classed('grid', true)  
+					.call(xAxisGrid);
+					
+			  svgProjectWork.append("g")
+				  .attr("class", "x axis")
+				  .attr("transform", "translate(0," + height + ")")
+				  .call(xAxis);
+
+			  svgProjectWork.append("g")
+				  .attr("class", "y axis")
+				  .call(yAxis)
+				.append("text")
+				  .attr("transform", "rotate(-90)")
+				  .attr("y", 6)
+				  .attr("dy", ".71em")
+				  .style("text-anchor", "end")
+				  .text("Minutes");
+
+			  svgProjectWork.append("path")
+				  .datum(dataM)
+				  .attr("class", "line")
+				  .attr("d", lineProjectWOrk);
+				  
+				svgProjectWork.append("text")
+					.attr("x", (width / 2))             
+					//.attr("y", 0 - (margin.top / 2))
+					.attr("y", 0)
+					.attr("text-anchor", "middle")  
+					.style("font-size", "16px") 
+					//.style("text-decoration", "underline")  
+					.text("Project Work");
+				});	
+				//end of graph 2, Project Work
+				
+				
+				//*****graph 3, calories per day*********
+				//************************************
+				var lineCalories = d3.line()
+				.x(function(d) { return x(d.day_date); })
+				.y(function(d) { return y(d.calorie_count); });
+				
+				var svgCalories = d3.select("#graph3").append("svg")
+				.attr("id", "graph3")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+			  .append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			d3.json("{% url "heydayzdiary:calorie_count_by_day" %}", function(error, dataM) {
+			  dataM.forEach(function(d) {
+				d.day_date = parseDate(d.day_date);
+				d.calorie_count = +d.calorie_count;
+			  });
+
+			  x.domain(d3.extent(dataM, function(d) { return d.day_date; }));
+			  y.domain(d3.extent(dataM, function(d) { return d.calorie_count; }));
+
+			  svgCalories.append("g")
+					.classed('grid', true)
+					.call(yAxisGrid);
+			  
+				svgCalories.append("g")
+					.classed('grid', true)  
+					.call(xAxisGrid);
+					
+			  svgCalories.append("g")
+				  .attr("class", "x axis")
+				  .attr("transform", "translate(0," + height + ")")
+				  .call(xAxis);
+
+			  svgCalories.append("g")
+				  .attr("class", "y axis")
+				  .call(yAxis)
+				.append("text")
+				  .attr("transform", "rotate(-90)")
+				  .attr("y", 6)
+				  .attr("dy", ".71em")
+				  .style("text-anchor", "end")
+				  .text("Calories");
+
+			  svgCalories.append("path")
+				  .datum(dataM)
+				  .attr("class", "line")
+				  .attr("d", lineCalories);
+				  
+				svgCalories.append("text")
+					.attr("x", (width / 2))             
+					//.attr("y", 0 - (margin.top / 2))
+					.attr("y", 0)
+					.attr("text-anchor", "middle")  
+					.style("font-size", "16px") 
+					//.style("text-decoration", "underline")  
+					.text("Calories per Day");
+				});	
+				//end of grpah 3 Calorie Count
+				
+					//*****graph 3, Graph 4 Exercise Duration per Diem*********
+					//************************************
+					
+				var lineExercisePerDay = d3.line()
+				.x(function(d) { return x(d.day_date); })
+				.y(function(d) { return y(d.exercise_time); });
+				
+				var svgExercisePerDay = d3.select("#graph4").append("svg")
+				.attr("id", "graph3")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+			  .append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			d3.json("{% url "heydayzdiary:exercise_time_by_day" %}", function(error, dataM) {
+			  dataM.forEach(function(d) {
+				d.day_date = parseDate(d.day_date);
+				d.exercise_time = +d.exercise_time;
+			  });
+
+			  x.domain(d3.extent(dataM, function(d) { return d.day_date; }));
+			  y.domain(d3.extent(dataM, function(d) { return d.exercise_time; }));
+
+			  svgExercisePerDay.append("g")
+					.classed('grid', true)
+					.call(yAxisGrid);
+			  
+				svgExercisePerDay.append("g")
+					.classed('grid', true)  
+					.call(xAxisGrid);
+					
+			  svgExercisePerDay.append("g")
+				  .attr("class", "x axis")
+				  .attr("transform", "translate(0," + height + ")")
+				  .call(xAxis);
+
+			  svgExercisePerDay.append("g")
+				  .attr("class", "y axis")
+				  .call(yAxis)
+				.append("text")
+				  .attr("transform", "rotate(-90)")
+				  .attr("y", 6)
+				  .attr("dy", ".71em")
+				  .style("text-anchor", "end")
+				  .text("Calories");
+
+			  svgExercisePerDay.append("path")
+				  .datum(dataM)
+				  .attr("class", "line")
+				  .attr("d", lineExercisePerDay);
+				  
+				svgExercisePerDay.append("text")
+					.attr("x", (width / 2))             
+					//.attr("y", 0 - (margin.top / 2))
+					.attr("y", 0)
+					.attr("text-anchor", "middle")  
+					.style("font-size", "16px") 
+					//.style("text-decoration", "underline")  
+					.text("Exercise per Day");
+				});	
+				//end of Graph 4 Exercise Duration per Diem
+			});
 
 	</script>
 	<h1>Totals</h1>
 	Total Days: {{ total_days }}
+	
+	<div id="graph1"></div>
+	<div id="graph2"></div>
+	<div id="graph3"></div>
+	<div id="graph4"></div>
 
 {% endblock %}

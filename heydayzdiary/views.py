@@ -16,7 +16,7 @@ import sys
 import datetime
 
 from django.db import connections
-from django.db.models import Count
+from django.db.models import Count, Min, Sum, Avg, F
 from django.http import JsonResponse
 
 
@@ -49,6 +49,7 @@ def UseTemplateDay(request):
         day_entry.day_main_text = ""
         day_entry.day_headline = "DAY " + day_template.name
         day_entry.day_date = datetime.date.today()
+        
         old_day_entry_location = day_entry.day_entry_location_set.all()
         old_day_entry_person_set = day_entry.day_entry_person_set.all()
         old_meal_set = day_entry.meal_set.all()
@@ -56,11 +57,28 @@ def UseTemplateDay(request):
         
         day_entry.pk = None #this is what causes a NEW day to be created
         day_entry.save()
-        #now add the old locations/etc to the new day        
-        day_entry.day_entry_location_set.set(old_day_entry_location)
-        day_entry.day_entry_person_set.set(old_day_entry_person_set)
-        day_entry.meal_set.set(old_meal_set)
-        day_entry.work_set.set(old_work_set)
+        #now add the old locations/etc to the new day    
+        #originaly effort here simply MOVED the old links to the new day instead of creating new (copies)
+        #loop through the locations to copy, create new location each time, assinging each to the new day_entry
+        for day_entry_location in old_day_entry_location:
+            day_entry_location.pk = None
+            day_entry_location.day_entry = day_entry
+            day_entry_location.save()
+            
+        for day_entry_person in old_day_entry_person_set:
+            day_entry_person.pk = None
+            day_entry_person.day_entry = day_entry
+            day_entry_person.save()
+        
+        for meal in old_meal_set:
+            meal.pk = None
+            meal.day_entry = day_entry
+            meal.save()
+        
+        for work in old_work_set:
+            work.pk = None
+            work.day_entry = day_entry
+            work.save()        
         
         return redirect('heydayzdiary:days')
     else:
@@ -109,12 +127,20 @@ class TotalsSampleD3View(LoginRequiredMixin,TemplateView):
         return context
 
 def person_count_by_day(request):
-    data = Day_entry.objects.values('day_date').annotate(num_persons=Count('day_entry_person')).order_by('day_date')
+    data = Day_entry.objects.filter(user=request.user).values('day_date').annotate(num_persons=Count('day_entry_person')).order_by('day_date')
     return JsonResponse(list(data), safe=False)   
 
-def meal_count_by_day(request):
-    dataM = Day_entry.objects.values('day_date').annotate(num_meals=Count('day_entry_person')).order_by('day_date')
-    return JsonResponse(list(dataM), safe=False) 	
+def project_work_by_day(request):
+    data = Day_entry.objects.filter(user=request.user).values('day_date').annotate(project_time=Sum(F('day_entry_project__end_time')-F('day_entry_project__start_time'))/60000000).order_by('day_date')
+    return JsonResponse(list(data), safe=False)     
+    
+def calorie_count_by_day(request):
+    data = Day_entry.objects.filter(user=request.user).values('day_date').annotate(calorie_count=Sum('meal__calories')).order_by('day_date')
+    return JsonResponse(list(data), safe=False)     
+
+def exercise_time_by_day(request):
+    data = Day_entry.objects.filter(user=request.user).values('day_date').annotate(exercise_time=Sum(F('exercise__end_time')-F('exercise__start_time'))/60000000).order_by('day_date')
+    return JsonResponse(list(data), safe=False)     
         
        
 class DayCreate(LoginRequiredMixin,CreateView):
