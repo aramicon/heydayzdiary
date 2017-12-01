@@ -19,8 +19,8 @@ p{
 	float:left;
 	background-color:#fdfde5;
 	/* width: 10%; */
-	width:100px;
-	height:100px;
+	width:80px;
+	height:80px;
     /* padding-bottom: 10%; */
 }
 
@@ -47,11 +47,10 @@ p{
 	background-color:#dddde0;
 }
 .bottompanel{
-	position: fixed;
-    z-index: 100; 
-    bottom: 0; 
-    left: 0;
-    width: 100%;
+	border: 1px solid #ccc;
+    z-index: -10; 
+    
+   
 	padding:10px;
 }
 #time-range p {
