@@ -110,7 +110,7 @@ class Transaction(models.Model):
     day_entry = models.ForeignKey(Day_entry, on_delete=models.CASCADE)
     transaction_type = models.ForeignKey(Transaction_type, on_delete=models.CASCADE)
     job = models.ForeignKey(Job, on_delete=models.SET_NULL,null=True,blank=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     transaction_time = models.TimeField()
     description = models.TextField(blank=True)
     amount = models.DecimalField(blank=True,max_digits=8, decimal_places=2)

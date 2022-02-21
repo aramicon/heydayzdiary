@@ -3,8 +3,8 @@
 	<script>
 		$(document).ready(function() {
 			$('#day_date').datepicker({ dateFormat: 'yy-mm-dd' });
-			
-				
+
+
 		});
 	</script>
 	 <script>
@@ -22,7 +22,7 @@
 		if($("#sleep_duration")){
 			$( "#sleep_duration" ).val( $( "#sleep_duration_slider" ).slider( "value" )/10 );
 		}
-		
+
 		//sleep quality slider
 		 $( "#sleep_quality_slider" ).slider({
 		  range: "min",
@@ -37,7 +37,7 @@
 		if($("#sleep_quality")){
 			$( "#sleep_quality" ).val( $( "#sleep_quality_slider" ).slider( "value" ) );
 		}
-		
+
 		//weather SUN slider
 		 $( "#weather_sun_slider" ).slider({
 		  range: "min",
@@ -52,7 +52,7 @@
 		if($("#weather_sun")){
 			$( "#weather_sun" ).val( $( "#weather_sun_slider" ).slider( "value" ) );
 		}
-		
+
 		//weather RAIN slider
 		 $( "#weather_rain_slider" ).slider({
 		  range: "min",
@@ -67,7 +67,7 @@
 		if($("#weather_rain")){
 			$( "#weather_rain" ).val( $( "#weather_rain_slider" ).slider( "value" ) );
 		}
-		
+
 		//weather WIND slider
 		 $( "#weather_wind_slider" ).slider({
 		  range: "min",
@@ -103,7 +103,7 @@
 		  min: 0,
 		  max: 1440,
 		  slide: function( event, ui ) {
-		  
+
 			var hours1 = String(Math.floor(ui.value / 60));
 					var minutes1 = String(ui.value - (hours1 * 60));
 					if (ui.value == 1440){
@@ -116,14 +116,14 @@
 					if (minutes1 == 0) minutes1 = '00';
 
 					$('#wake_up_time').val(hours1 + ':' + minutes1);
-					
-		   
+
+
 		  }
 		});
-		
+
 		//initialise the slider for the meal time
-		var slider_time_total_minutes = 0;	
-		
+		var slider_time_total_minutes = 0;
+
 		if ($('#wake_up_time').val()){
 			var slider_time = $('#wake_up_time').val();
 			if(slider_time.indexOf(":") > 0){ //format should be 23:23
@@ -131,23 +131,23 @@
 				var slider_time_hours = slider_time.substring(0, slider_time.indexOf(":"));
 				slider_time = slider_time.substring(slider_time.indexOf(":")+1);
 				var slider_time_minutes = slider_time // slider_time.substring(0, slider_time.indexOf(":"));
-				slider_time_total_minutes = (parseInt(slider_time_hours)*60) + parseInt(slider_time_minutes);	
-			}		
+				slider_time_total_minutes = (parseInt(slider_time_hours)*60) + parseInt(slider_time_minutes);
+			}
 		}
 		if($("#wake_up_time_slider")){
 			$( "#wake_up_time_slider" ).slider('value',slider_time_total_minutes);
 		}
-		
+
 		// tabs
 		 $( "#tabs" ).tabs();
-		 
+
 		 //accordian for day info
 		 $( "#day_entry_accordion" ).accordion({
 		  collapsible: true,
 		  active: false,
 		  heightStyle: "content"
 		});
-		
+
 	  } );
 	  </script>
 
@@ -191,14 +191,14 @@
 			<div id="sleep_quality_slider"></div>
 			<label for="sleep_notes">Notes</label>
 			<textarea  rows="5" cols="100" name="sleep_notes" id="sleep_notes" placeholder = "Sleep Notes">{{ day_entry.sleep_notes }}</textarea>
-			<br />		
+			<br />
 			<label for="start_time">Wake/Get Up Time:</label>
-			<div id="wake_up_time_slider"></div>		
+			<div id="wake_up_time_slider"></div>
 			<input type="text" name="wake_up_time" required="" id="wake_up_time"  value = "{{ day_entry.wake_up_time|date:'H:i' }}">
-			
+
 		</p>
-			
-		
+
+
 	  </div>
 	  <h3>Weather</h3>
 	  <div>
@@ -214,14 +214,23 @@
 		<div id="weather_wind_slider"></div>
 		<label for="weather_temperature">Temperature</label>
 		<input type="text" id="weather_temperature" name = "weather_temperature" readonly style="border:0; color:#f6931f; font-weight:bold;" value = "{{ day_entry.weather_temperature }}">
-		<div id="weather_temperature_slider"></div>	
+		<div id="weather_temperature_slider"></div>
 		<label for="weather_notes">Notes</label>
 		<textarea  rows="5" cols="100" name="weather_notes" id="weather_notes" placeholder = "Weather Notes">{{ day_entry.weather_notes }}</textarea>
 
 		</p>
 	  </div>
-	  
+		 <h3>Extra</h3>
+		 <div>
+			 <p>
+		 		<label for="is_template_day">Is this a Template Day? (used ONLY for quickly creating other, real days!)</label>
+		 		<input type = "checkbox" name = "is_template_day" id="is_template_day" {% if day_entry.is_template_day %}checked{% endif %} >
+		 	</p>
+		 </div>
+
 	</div>
+
+
 
 	<br />
 	<input type = "submit" value = "Save" />
@@ -242,13 +251,13 @@
 			<p>
 			<ul>
 				{% for work in day_entry.work_set.all %}
-					<li>FROM 
+					<li>FROM
 						<strong>{{ work.start_time|date:"H:i" }}</strong>
-						TO 
+						TO
 						<strong>{{ work.end_time|date:"H:i" }}</strong>
-						: 
+						:
 						<a href="{% url 'heydayzdiary:work-update' day_entry_id=day_entry.id pk=work.id %}">{{work.description}}</a>
-					</li>			
+					</li>
 				{% endfor %}
 					<li><a href="{% url 'heydayzdiary:work-add' day_entry_id=day_entry.id %}">ADD WORK</a></li>
 				</ul>
@@ -261,11 +270,11 @@
 				{% for study in day_entry.study_set.all %}
 					<li>{{ study.study_subject.name }}
 						<a href="{% url 'heydayzdiary:study-update' day_entry_id=day_entry.id pk=study.id %}">
-							<strong>{{ study.start_time|date:"H:i" }}</strong>-					 
+							<strong>{{ study.start_time|date:"H:i" }}</strong>-
 							<strong>{{ study.end_time|date:"H:i" }}</strong>
 							{{study.description}}
 						</a>
-					</li>			
+					</li>
 				{% endfor %}
 					<li><a href="{% url 'heydayzdiary:study-add' day_entry_id=day_entry.id %}">ADD STUDY</a></li>
 					<a href="{% url 'heydayzdiary:study_subject-list' %}">View/Manage STUDY SUBJECTS</a>
@@ -276,13 +285,13 @@
 			<p>
 				<ul>
 				{% for exercise in day_entry.exercise_set.all %}
-					<li>FROM 
+					<li>FROM
 						<strong>{{ exercise.start_time|date:"H:i" }}</strong>
-						TO 
+						TO
 						<strong>{{ exercise.end_time|date:"H:i" }}</strong>
-						: 
+						:
 						<a href="{% url 'heydayzdiary:exercise-update' day_entry_id=day_entry.id pk=exercise.id %}">{{exercise.description}}</a>
-					</li>			
+					</li>
 				{% endfor %}
 					<li><a href="{% url 'heydayzdiary:exercise-add' day_entry_id=day_entry.id %}">ADD EXERCISE</a></li>
 				</ul>
@@ -292,9 +301,9 @@
 			<p>
 				<ul>
 				{% for day_entry_project in day_entry.day_entry_project_set.all %}
-					<li> {{day_entry_project.project.name}} 
-					<a href="{% url 'heydayzdiary:day_entry_project-update' day_entry_id=day_entry.id pk=day_entry_project.id %}"><strong>{{ day_entry_project.start_time|date:"H:i" }}</strong>-<strong>{{ day_entry_project.end_time|date:"H:i" }}</strong> {{ day_entry_project.description|truncatechars:50 }} </a> 
-					</li>	
+					<li> {{day_entry_project.project.name}}
+					<a href="{% url 'heydayzdiary:day_entry_project-update' day_entry_id=day_entry.id pk=day_entry_project.id %}"><strong>{{ day_entry_project.start_time|date:"H:i" }}</strong>-<strong>{{ day_entry_project.end_time|date:"H:i" }}</strong> {{ day_entry_project.description|truncatechars:50 }} </a>
+					</li>
 				{% endfor %}
 				</ul>
 				<a href="{% url 'heydayzdiary:day_entry_project-add' day_entry_id=day_entry.id %}">ADD Project Work for Day</a><br />
@@ -306,7 +315,7 @@
 			<ul>
 			{% for day_entry_location in day_entry.day_entry_location_set.all %}
 				<li><a href="{% url 'heydayzdiary:day_entry_location-update' day_entry_id=day_entry.id pk=day_entry_location.id %}">{{day_entry_location.location.location_name}}</a>
-				</li>	
+				</li>
 			{% endfor %}
 			</ul>
 
@@ -319,7 +328,7 @@
 			<ul>
 			{% for day_entry_person in day_entry.day_entry_person_set.all %}
 				<li> <a href="{% url 'heydayzdiary:day_entry_person-update' day_entry_id=day_entry.id pk=day_entry_person.id %}">{{day_entry_person.person.name}}</a>
-				</li>	
+				</li>
 			{% endfor %}
 			</ul>
 			<a href="{% url 'heydayzdiary:day_entry_person-add' day_entry_id=day_entry.id %}">ADD Person to this Day</a><br />
@@ -330,11 +339,11 @@
 			<p>
 				<ul>
 				{% for meal in day_entry.meal_set.all %}
-					<li>{{ meal.meal_type.meal_type_description}} AT 
+					<li>{{ meal.meal_type.meal_type_description}} AT
 						<strong>{{ meal.meal_time|date:"H:i" }}</strong>
-						: 
+						:
 						<a href="{% url 'heydayzdiary:meal-update' day_entry_id=day_entry.id pk=meal.id %}">{{meal.description}}</a>
-					</li>			
+					</li>
 				{% endfor %}
 					<li><a href="{% url 'heydayzdiary:meal-add' day_entry_id=day_entry.id %}">ADD MEAL</a></li>
 				</ul>
@@ -344,11 +353,11 @@
 			<p>
 				<ul>
 				{% for transaction in day_entry.transaction_set.all %}
-					<li>{{ transaction.transaction_type.transaction_type_description}} AT 
+					<li>{{ transaction.transaction_type.transaction_type_description}} AT
 						<strong>{{ transaction.transaction_time|date:"H:i" }}</strong>
-						: 
+						:
 						<a href="{% url 'heydayzdiary:transaction-update' day_entry_id=day_entry.id pk=transaction.id %}">{{transaction.description}} : {{transaction.amount}}</a>
-					</li>			
+					</li>
 				{% endfor %}
 					<li><a href="{% url 'heydayzdiary:transaction-add' day_entry_id=day_entry.id %}">ADD TRANSACTION</a></li>
 				</ul>
@@ -364,15 +373,15 @@
 	 <p>
 	 <a href="{% url 'heydayzdiary:read-format' day_entry.id %}">Read-Friendly View</a>
 	 </p>
-	 
+
 	<p>
 	 <a href="{% url 'heydayzdiary:days' %}">Back to DAYS List</a>
 	</p>
-	
+
 	 <p>
 	 <a href="{% url 'heydayzdiary:day-delete' day_entry.id %}">Delete this Day</a>
 	 </p>
-	 
+
 	<p>
 	 <a href="{% url 'heydayzdiary:assign-template-day' day_entry.id %}">Make this DAY a template day for easy re-creation</a>
 	</p>

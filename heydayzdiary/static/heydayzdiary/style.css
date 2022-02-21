@@ -7,7 +7,7 @@ body {
 }
 
 p{
-	padding:10px;	
+	padding:10px;
 }
 
 .frontpagelist {
@@ -21,18 +21,21 @@ p{
 	/* width: 10%; */
 	width:80px;
 	height:80px;
+	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 2px 1px 0 rgba(0, 0, 0, 0.19);
+	background: linear-gradient(#fdfcf6, #f7f7c4);
+  overflow: hidden;
     /* padding-bottom: 10%; */
 }
 
 .frontpagelist:hover {
 	background-color:#dddde0;
+	background: linear-gradient(#ffffff, #d7d7a4);
 }
 
 .frontpagelist_addnew {
 	color:#fdfde5;
 	font-size:1em;
-	padding:10px;
-	border: 1px solid #fdfde5;
+	/*border: 1px solid #fdfde5;*/
 	margin:5px;
 	list-style: none;
 	float:left;
@@ -43,14 +46,22 @@ p{
 	height:100px;
 }
 
+.frontpagelist_addnew input{
+	margin:5px 0px 0px 5px;
+}
+
+.frontpagelist_addnew select{
+	margin:5px 0px 0px 5px;
+}
+
 .frontpagelist_addnew:hover {
 	background-color:#dddde0;
 }
 .bottompanel{
 	border: 1px solid #ccc;
-    z-index: -10; 
-    
-   
+    z-index: -10;
+
+
 	padding:10px;
 }
 #time-range p {
@@ -83,10 +94,10 @@ p{
 #time-range {
   /* width: 400px; */
    width: 80%;
-    
+
 }
 .ui-slider .ui-slider-handle {
-   
+
     padding-left: 0px;
 }
 
@@ -98,7 +109,7 @@ p{
     text-align: center;
     line-height: 1.6em;
  }
- 
+
  .page-header{
 	border: 1px solid #c5c5c5;
     background: #f6f6f6;
@@ -110,11 +121,11 @@ p{
 	border-bottom-right-radius: 3px;
 	border-bottom-left-radius: 3px;
  }
- 
+
  .page-header h1{
 	 color: #1a8222;
  }
- 
+
  .userinfo{
 	 float:right;
 	 font-size:1.5em;
@@ -131,3 +142,15 @@ p{
 	border-bottom-right-radius: 3px;
 	border-bottom-left-radius: 3px;
  }
+
+ table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #bbb9b9;
+    text-align: left;
+    padding: 8px;
+}

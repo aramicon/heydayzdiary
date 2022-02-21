@@ -1,6 +1,7 @@
 {% extends 'heydayzdiary/base.html' %}
 {% block content %}
-	
+{% load diff_in_time %}
+
 	<h1>Update Job: {{ job.name }}</h1>
 	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 	<form action="{% url 'heydayzdiary:job-update' pk=job.id %}" method="post">
@@ -8,6 +9,34 @@
 		{{ form.as_p }}
 		<input type="submit" value="Submit" />
 	 </form>
+
+	 <p>
+				<strong>Total Duration worked on Job:</strong> {{ total_job_duration }} minutes. {{ total_job_duration_hours }} hours.
+				</p>
+				<h2>Job Work Session History</h2>
+				<table>
+				<tr>
+				<th>ID</th><th>Day</th><th>Start Time</th><th>Finish Time</th><th>Duration</th><th>Notes</th>
+				</tr>
+				{% for work in job.work_set.all|dictsortreversed:"day_entry.day_date" %}
+				<tr>
+				<td><a href="{% url 'heydayzdiary:work-update' day_entry_id=work.day_entry.id pk=work.id %}">{{ work.id }}</a></td>
+				<td><a href="{% url 'heydayzdiary:day-update' pk=work.day_entry.id %}">{{ work.day_entry.day_date|date:"y/m/d" }}</a></td>
+				<td>{{ work.start_time|date:"H:i" }}</td>
+				<td>{{ work.end_time|date:"H:i" }}</td>
+				<td>{{ work.start_time|diff_in_time:work.end_time }}</td>
+				<td>{{ work.description }}</td>
+				</tr>
+
+
+					<strong></strong>-<strong></strong>  </a>
+					</li>
+				{% endfor %}
+				</table>
+
+	<p>
+	Download Jobs task/work details as <a href="{% url 'heydayzdiary:work-export-csv' job.id%}">CSV</a>
+	</p>
 	 <p>
 	 <a href="{% url 'heydayzdiary:job-add' %}">Add NEW JOb</a>
 	</p>

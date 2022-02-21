@@ -1,5 +1,6 @@
 {% extends 'heydayzdiary/base.html' %}
 {% block content %}
+{% load diff_in_time %}
 
 	<script>
 		$(document).ready(function() {
@@ -16,6 +17,33 @@
 		{{ form.as_p }}
 		<input type="submit" value="Submit" />
 	 </form>
+				<p>
+				<strong>Total Duration worked on Project:</strong> {{ total_project_duration }} minutes. {{ total_project_duration_hours }} hours.
+				</p>
+				<h2>Project Work Session History</h2>
+				<table>
+				<tr>
+				<th>ID</th><th>Day</th><th>Start Time</th><th>Finish Time</th><th>Duration</th><th>Notes</th>
+				</tr>
+				{% for day_entry_project in project.day_entry_project_set.all|dictsortreversed:"day_entry.day_date"  %}
+				<tr>
+				<td><a href="{% url 'heydayzdiary:day_entry_project-update' day_entry_id=day_entry_project.day_entry.id pk=day_entry_project.id %}">{{ day_entry_project.id }}</a></td>
+				<td><a href="{% url 'heydayzdiary:day-update' pk=day_entry_project.day_entry.id %}">{{ day_entry_project.day_entry.day_date|date:"y/m/d" }}</a></td>
+				<td>{{ day_entry_project.start_time|date:"H:i" }}</td>
+				<td>{{ day_entry_project.end_time|date:"H:i" }}</td>				
+				<td>{{ day_entry_project.start_time|diff_in_time:day_entry_project.end_time }}</td>
+				<td>{{ day_entry_project.description }}</td>
+				</tr>
+				
+					
+					<strong></strong>-<strong></strong>  </a> 
+					</li>	
+				{% endfor %}
+				</table>
+				
+			
+			
+			
 	 <p>
 	 <a href="{% url 'heydayzdiary:project-add' %}">Add NEW Project</a>
 	</p>

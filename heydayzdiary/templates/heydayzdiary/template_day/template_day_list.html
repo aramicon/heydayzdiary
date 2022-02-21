@@ -1,25 +1,41 @@
-{% extends 'heydayzdiary/base.html' %}
-{% block content %}
-	
-	<h1>Template Days</h1>
-	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-	{% if object_list  %}
-		<ul>
-		{% for templateDay in object_list  %}
-		<p>
-			<a href="{% url 'heydayzdiary:template-day-update' templateDay.id %}"> {{ templateDay.id }}:  <strong>{{ templateDay.name }}</strong> {{ templateDay.description }} DAY: {{ templateDay.day_entry.id }} </li></a>
-		</p>
-		{% endfor %}
-			
-		</ul>
-	{% else %}
-		<p>No Template Days exist.</p>
-	{% endif %}
-	 <p>
-	 <a href="{% url 'heydayzdiary:template-day-add' %}">Add a NEW Template Day</a>
+{% load static %}
+
+<link rel = "stylesheet" type = "text/css" href="{% static 'heydayzdiary/style.css' %}">
+<div class = "frontpage">
+{% if template_day_entries %}
+	<ul>
+	{% for day_entry in template_day_entries %}
+		<a href="{% url 'heydayzdiary:day-update' day_entry.id %}"><li class = "frontpagelist templateday" >T-DAY <strong>{{ day_entry.day_date|date:"Y-m-d" }}</strong> {{ day_entry.day_headline }}</li></a>
+	{% endfor %}
+		<li class = "frontpagelist_addnew" ><strong><a href="{% url 'heydayzdiary:day-add' %}">ADD DAY</a></strong>
+		 {% if template_days %}
+			<br /><br />Template Days
+			 <form action="{% url 'heydayzdiary:use-template-day' %}" method="post">
+			  {% csrf_token %}
+				<select name="template_day_selected">
+
+				{% for td in template_days %}
+				  <option value="{{ td.id }}">{{ td.day_headline }}</option>
+				{% endfor %}
+				</select>
+				<input type=hidden name="day_entry_id" value="{{ d_id }}">
+				<input type="submit" value="Create" />
+			</form>
+
+		{% endif %}
+		</li>
+	</ul>
+{% else %}
+	<p>No Template Day Entries are available. Create a Day and make it a Template Day in the Extra options.
 	</p>
 	<p>
-	 <a href="{% url 'heydayzdiary:days' %}">Back to Days List</a>
+			<a href="{% url 'heydayzdiary:days' %}">Back to DAYS List</a>
 	</p>
-	
-{% endblock %}
+
+{% endif %}
+
+</div>
+<div class = bottompanel>
+		<a href="{% url 'heydayzdiary:days' %}">DAYS</a>
+	<a href="{% url 'heydayzdiary:logout' %}">LOGOUT</a>
+</div>

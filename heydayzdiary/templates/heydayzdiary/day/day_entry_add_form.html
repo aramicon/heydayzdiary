@@ -1,6 +1,6 @@
 {% extends 'heydayzdiary/base.html' %}
 {% block content %}
-	{% load static %}	
+	{% load static %}
 	<script>
 		$(document).ready(function() {
 			$('#day_date').datepicker({ dateFormat: 'yy-mm-dd' });
@@ -19,7 +19,7 @@
 		  }
 		});
 		$( "#sleep_duration" ).val( $( "#sleep_duration_slider" ).slider( "value" )/10 );
-		
+
 		 $( "#sleep_quality_slider" ).slider({
 		  range: "min",
 		  value: 5,
@@ -31,7 +31,7 @@
 		  }
 		});
 		$( "#sleep_quality" ).val( $( "#sleep_quality_slider" ).slider( "value" ) );
-		
+
 	  } );
 	  </script>
 
@@ -64,7 +64,7 @@
 	<input type="text" id="sleep_quality" name = "sleep_quality" readonly style="border:0; color:#f6931f; font-weight:bold;" value = "{{ day_entry.sleep_quality }}">
 	<div id="sleep_quality_slider"></div>
 	</p>
-
+	
 	<input type = "submit" value = "Save" />
 	</form>
 
